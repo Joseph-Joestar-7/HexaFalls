@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz - EduTrack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        background: 'var(--background)',
+                        foreground: 'var(--foreground)',
+                        card: 'var(--card)',
+                        'card-foreground': 'var(--card-foreground)',
+                        muted: 'var(--muted)',
+                        'muted-foreground': 'var(--muted-foreground)',
+                        accent: 'var(--accent)',
+                        'accent-foreground': 'var(--accent-foreground)',
+                        border: 'var(--border)',
+                    },
+                    animation: {
+                        'fade-up': 'fadeUp 0.7s ease-out',
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'scale-in': 'scaleIn 0.3s ease-out',
+                        'slide-left': 'slideLeft 0.5s ease-out',
+                        'slide-right': 'slideRight 0.5s ease-out',
+                        'bounce': 'bounce 2s infinite',
+                        'pulse': 'pulse 2s infinite',
+                    },
+                    keyframes: {
+                        fadeUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        scaleIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' }
+                        },
+                        slideLeft: {
+                            '0%': { opacity: '0', transform: 'translateX(-30px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' }
+                        },
+                        slideRight: {
+                            '0%': { opacity: '0', transform: 'translateX(30px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .sidebar-collapsed {
+            width: 60px;
+        }
+
+        .sidebar-expanded {
+            width: 256px;
+        }
+
+        .transition-width {
+            transition: width 0.3s ease;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .animate-slide-up {
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .animate-bounce-in {
+            animation: bounceIn 0.8s ease-out;
+        }
+
+        .animate-pulse-custom {
+            animation: pulseCustom 2s infinite;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+
+            70% {
+                transform: scale(0.9);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulseCustom {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .timer-warning {
+            animation: shake 0.5s ease-in-out infinite;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+
+        .modal-backdrop {
+            backdrop-filter: blur(10px);
+        }
+
+        .option-selected {
+            background-color: #dbeafe;
+            border-color: #3b82f6;
+        }
+
+        .dark .option-selected {
+            background-color: #1e3a8a;
+            border-color: #3b82f6;
+        }
+
+        .circular-progress {
+            transform: rotate(-90deg);
+        }
+
+        .circular-progress circle {
+            stroke-dasharray: 188.5;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s linear;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="bg-white dark:bg-gray-800 shadow-lg flex flex-col transition-width sidebar-expanded">
+            <!-- Logo -->
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                <div id="logo-full" class="flex items-center">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-white text-sm"></i>
+                    </div>
+                    <span class="ml-3 text-lg font-bold text-gray-900 dark:text-white sidebar-text">EduTrack</span>
+                </div>
+                <div id="logo-mini" class="hidden justify-center w-full">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-white text-sm"></i>
+                    </div>
+                </div>
+                <button onclick="toggleSidebar()" class="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <i id="sidebar-toggle-icon" class="fas fa-chevron-left text-gray-600 dark:text-gray-400"></i>
+                </button>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 px-2 py-4 space-y-1">
+                <a href="dashboard.html"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-home w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Dashboard</span>
+                </a>
+                <a href="notes.html"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-sticky-note w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">My Notes</span>
+                </a>
+                <a href="quiz.html" class="flex items-center px-3 py-2 text-white bg-purple-600 rounded-lg">
+                    <i class="fas fa-question-circle w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Quizzes & Tests</span>
+                </a>
+                <a href="#"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-chart-line w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Progress</span>
+                </a>
+                <a href="chatbot.html"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-robot w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">AI Assistant</span>
+                </a>
+                <a href="#"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-calendar w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Study Schedule</span>
+                </a>
+                <a href="paper.html"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-file-alt w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Question Papers</span>
+                </a>
+                <a href="#"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-cog w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Settings</span>
+                </a>
+            </nav>
+
+            <!-- Upgrade to Pro -->
+            <div class="p-4">
+                <div class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-3 text-center sidebar-upgrade">
+                    <p class="text-white text-sm font-medium sidebar-text">Upgrade to Pro</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+                            Samriddho's Quiz Centre <i class="fas fa-brain ml-2 text-purple-500"></i>
+                        </h1>
+                        <p class="text-gray-600 dark:text-gray-400 mt-1">Test your knowledge with AI-generated questions
+                        </p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="toggleTheme()"
+                            class="p-2.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200">
+                            <i id="theme-icon" class="fas fa-moon"></i>
+                        </button>
+
+                        <button
+                            class="relative p-2.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200">
+                            <i class="fas fa-bell"></i>
+                            <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+                        </button>
+
+                        <div class="flex items-center space-x-3 pl-3 border-l border-gray-200 dark:border-gray-700">
+                            <div class="text-right">
+                                <p class="text-sm font-semibold dark:text-white">Samriddho</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Premium Student</p>
+                            </div>
+                            <div
+                                class="w-9 h-9 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                                <i class="fas fa-user text-white text-sm"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Subject Selection Section (Default View) -->
+            <div id="subjectSelection" class="flex-1 overflow-y-auto p-6">
+                <div class="max-w-6xl mx-auto">
+                    <div class="text-center mb-8 animate-fade-in">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Choose Your Subject</h2>
+                        <p class="text-gray-600 dark:text-gray-400">Select a subject to start your quiz journey</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="subject-card bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-300 dark:border-gray-700 shadow-lg card-hover cursor-pointer animate-slide-up ring-2 ring-blue-500"
+                            data-subject="Mathematics">
+                            <div class="text-center">
+                                <div
+                                    class="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z">
+                                        </path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Mathematics</h3>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm">Algebra, Geometry, Calculus</p>
+                            </div>
+                        </div>
+
+                        <div class="subject-card bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-300 dark:border-gray-700 shadow-lg card-hover cursor-pointer animate-slide-up"
+                            data-subject="Physics" style="animation-delay: 0.1s">
+                            <div class="text-center">
+                                <div
+                                    class="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Physics</h3>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm">Mechanics, Thermodynamics, Optics
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="subject-card bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-300 dark:border-gray-700 shadow-lg card-hover cursor-pointer animate-slide-up"
+                            data-subject="Chemistry" style="animation-delay: 0.2s">
+                            <div class="text-center">
+                                <div
+                                    class="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z">
+                                        </path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Chemistry</h3>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm">Organic, Inorganic, Physical</p>
+                            </div>
+                        </div>
+
+                        <div class="subject-card bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-300 dark:border-gray-700 shadow-lg card-hover cursor-pointer animate-slide-up"
+                            data-subject="Biology" style="animation-delay: 0.3s">
+                            <div class="text-center">
+                                <div
+                                    class="w-16 h-16 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                                        </path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Biology</h3>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm">Botany, Zoology, Genetics</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button onclick="showConfigModal()"
+                            class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                            Generate Quiz
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Configuration Modal -->
+            <div id="configModal"
+                class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop hidden z-50 flex items-center justify-center">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-md w-full mx-4 animate-bounce-in">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">Quiz Configuration
+                    </h3>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Selected
+                                Subject</label>
+                            <div
+                                class="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 text-gray-900 dark:text-white font-medium">
+                                Mathematics</div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Question
+                                Type</label>
+                            <select
+                                class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-3 text-gray-900 dark:text-white">
+                                <option value="mcq" selected>Multiple Choice Questions</option>
+                                <option value="short">Short Answer</option>
+                                <option value="long">Long Answer</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Number of
+                                Questions</label>
+                            <select
+                                class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-3 text-gray-900 dark:text-white">
+                                <option value="5">5 Questions</option>
+                                <option value="10" selected>10 Questions</option>
+                                <option value="15">15 Questions</option>
+                                <option value="20">20 Questions</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Time per
+                                Question (seconds)</label>
+                            <select
+                                class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-3 text-gray-900 dark:text-white">
+                                <option value="30">30 seconds</option>
+                                <option value="60" selected>60 seconds</option>
+                                <option value="90">90 seconds</option>
+                                <option value="120">120 seconds</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Difficulty
+                                Level</label>
+                            <select
+                                class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-3 text-gray-900 dark:text-white">
+                                <option value="easy">Easy</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-4 mt-8">
+                        <button onclick="hideConfigModal()"
+                            class="flex-1 bg-gray-500 text-white py-3 rounded-lg font-medium hover:bg-gray-600 transition-colors">Cancel</button>
+                        <button onclick="startQuiz()"
+                            class="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all">Start
+                            Quiz</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Section -->
+            <div id="quizSection" class="hidden flex-1 overflow-y-auto p-6">
+                <div class="max-w-4xl mx-auto">
+                    <!-- Quiz Header -->
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-xl p-6 mb-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Mathematics Quiz</h2>
+                                <p class="text-gray-600 dark:text-gray-400">Question <span
+                                        class="font-semibold">1</span> of <span class="font-semibold">2</span></p>
+                            </div>
+                            <div class="text-right">
+                                <div class="flex items-center space-x-4">
+                                    <div
+                                        class="text-2xl font-mono font-bold text-gray-900 dark:text-white timer-warning">
+                                        00:08</div>
+                                    <div class="w-16 h-16 relative">
+                                        <svg class="w-16 h-16 circular-progress">
+                                            <circle cx="32" cy="32" r="30" stroke="currentColor" stroke-width="4"
+                                                fill="transparent" class="text-gray-200" />
+                                            <circle cx="32" cy="32" r="30" stroke="currentColor" stroke-width="4"
+                                                fill="transparent" class="text-red-500"
+                                                style="stroke-dashoffset: 150" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full progress-bar"
+                                style="width: 50%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Question Card -->
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-200 dark:border-gray-700 animate-fade-in">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">What is the derivative
+                                of x²?</h3>
+                        </div>
+
+                        <!-- MCQ Options -->
+                        <div class="space-y-3 mb-8">
+                            <div
+                                class="option-item bg-gray-100 dark:bg-gray-700 border border-blue-500 rounded-lg p-4 cursor-pointer option-selected">
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 border-2 border-blue-500 rounded-full mr-3 bg-blue-500"></div>
+                                    <span class="text-gray-900 dark:text-white font-medium">A) 2x</span>
+                                </div>
+                            </div>
+
+                            <div
+                                class="option-item bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-4 cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition-all duration-200">
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 border-2 border-gray-400 rounded-full mr-3"></div>
+                                    <span class="text-gray-900 dark:text-white">B) x</span>
+                                </div>
+                            </div>
+
+                            <div
+                                class="option-item bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-4 cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition-all duration-200">
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 border-2 border-gray-400 rounded-full mr-3"></div>
+                                    <span class="text-gray-900 dark:text-white">C) 2</span>
+                                </div>
+                            </div>
+
+                            <div
+                                class="option-item bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-4 cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition-all duration-200">
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 border-2 border-gray-400 rounded-full mr-3"></div>
+                                    <span class="text-gray-900 dark:text-white">D) x²</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <button
+                                class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled>Previous</button>
+                            <button onclick="showQuestion2()"
+                                class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all">Next
+                                Question</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 2 Section -->
+            <div id="question2Section" class="hidden flex-1 overflow-y-auto p-6">
+                <div class="max-w-4xl mx-auto">
+                    <!-- Quiz Header -->
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-xl p-6 mb-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Mathematics Quiz</h2>
+                                <p class="text-gray-600 dark:text-gray-400">Question <span
+                                        class="font-semibold">2</span> of <span class="font-semibold">2</span></p>
+                            </div>
+                            <div class="text-right">
+                                <div class="flex items-center space-x-4">
+                                    <div class="text-2xl font-mono font-bold text-gray-900 dark:text-white">00:45</div>
+                                    <div class="w-16 h-16 relative">
+                                        <svg class="w-16 h-16 circular-progress">
+                                            <circle cx="32" cy="32" r="30" stroke="currentColor" stroke-width="4"
+                                                fill="transparent" class="text-gray-200" />
+                                            <circle cx="32" cy="32" r="30" stroke="currentColor" stroke-width="4"
+                                                fill="transparent" class="text-blue-500"
+                                                style="stroke-dashoffset: 45" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full progress-bar"
+                                style="width: 100%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Question Card -->
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-200 dark:border-gray-700 animate-fade-in">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Solve for x: 2x + 5 =
+                                13</h3>
+                        </div>
+
+                        <!-- MCQ Options -->
+                        <div class="space-y-3 mb-8">
+                            <div
+                                class="option-item bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-4 cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition-all duration-200">
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 border-2 border-gray-400 rounded-full mr-3"></div>
+                                    <span class="text-gray-900 dark:text-white">A) x = 4</span>
+                                </div>
+                            </div>
+
+                            <div
+                                class="option-item bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-4 cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition-all duration-200">
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 border-2 border-gray-400 rounded-full mr-3"></div>
+                                    <span class="text-gray-900 dark:text-white">B) x = 3</span>
+                                </div>
+                            </div>
+
+                            <div
+                                class="option-item bg-gray-100 dark:bg-gray-700 border border-blue-500 rounded-lg p-4 cursor-pointer option-selected">
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 border-2 border-blue-500 rounded-full mr-3 bg-blue-500"></div>
+                                    <span class="text-gray-900 dark:text-white font-medium">C) x = 5</span>
+                                </div>
+                            </div>
+
+                            <div
+                                class="option-item bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-4 cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition-all duration-200">
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 border-2 border-gray-400 rounded-full mr-3"></div>
+                                    <span class="text-gray-900 dark:text-white">D) x = 6</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <button onclick="showQuestion1()"
+                                class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors">Previous</button>
+                            <button onclick="showResults()"
+                                class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all">Finish
+                                Quiz</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="resultsSection" class="hidden flex-1 overflow-y-auto p-6">
+                <div class="max-w-6xl mx-auto">
+                    <div class="text-center mb-8 animate-fade-in">
+                        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Quiz Complete! 🎉</h2>
+                        <div
+                            class="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl p-6 inline-block">
+                            <div class="text-2xl font-bold mb-2">Your Score</div>
+                            <div class="text-4xl font-bold">1/2</div>
+                            <div class="text-lg opacity-90">50%</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                        <!-- Score Breakdown Chart -->
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-slide-up">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                                <span class="mr-2">📊</span>
+                                Score Breakdown
+                            </h3>
+                            <div class="h-64 flex items-center justify-center">
+                                <canvas id="performanceChart" width="300" height="200"></canvas>
+                            </div>
+                            <div class="mt-4 flex justify-center space-x-6">
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 bg-green-500 rounded-full mr-2"></div>
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">Correct (50%)</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 bg-red-500 rounded-full mr-2"></div>
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">Incorrect (50%)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Performance Analytics Over Time -->
+                        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-slide-up"
+                            style="animation-delay: 0.1s">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 flex items-center">
+                                <span class="mr-2">📈</span>
+                                Performance Analytics
+                            </h3>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">Track your quiz performance over
+                                time</p>
+                            <div class="h-64 relative">
+                                <canvas id="progressChart" width="400" height="200"></canvas>
+                            </div>
+                            <div class="mt-4 grid grid-cols-2 gap-4 text-center">
+                                <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-3">
+                                    <div class="text-lg font-bold text-gray-900 dark:text-white">85%</div>
+                                    <div class="text-xs text-gray-600 dark:text-gray-400">Best Score</div>
+                                </div>
+                                <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-3">
+                                    <div class="text-lg font-bold text-gray-900 dark:text-white">7</div>
+                                    <div class="text-xs text-gray-600 dark:text-gray-400">Quizzes Taken</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Enhanced Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                        <div
+                            class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-4 text-center animate-bounce-in">
+                            <div class="text-2xl font-bold">65%</div>
+                            <div class="text-sm opacity-90">Average Score</div>
+                        </div>
+                        <div class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl p-4 text-center animate-bounce-in"
+                            style="animation-delay: 0.1s">
+                            <div class="text-2xl font-bold">42s</div>
+                            <div class="text-sm opacity-90">Avg Time/Question</div>
+                        </div>
+                        <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl p-4 text-center animate-bounce-in"
+                            style="animation-delay: 0.2s">
+                            <div class="text-2xl font-bold">8</div>
+                            <div class="text-sm opacity-90">Streak</div>
+                        </div>
+                        <div class="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-xl p-4 text-center animate-bounce-in"
+                            style="animation-delay: 0.3s">
+                            <div class="text-2xl font-bold">Math</div>
+                            <div class="text-sm opacity-90">Best Subject</div>
+                        </div>
+                    </div>
+
+                    <!-- Question Review -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-slide-up"
+                        style="animation-delay: 0.2s">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
+                            <span class="mr-2">📝</span>
+                            Question Review
+                        </h3>
+                        <div class="space-y-6">
+                            <!-- Question 1 Review -->
+                            <div
+                                class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 border-l-4 border-green-500 transform hover:scale-[1.02] transition-all duration-200">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="font-semibold text-gray-900 dark:text-white flex items-center">
+                                        <span
+                                            class="w-6 h-6 bg-green-500 text-white rounded-full text-sm flex items-center justify-center mr-2">1</span>
+                                        Question 1
+                                    </h4>
+                                    <span
+                                        class="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">✓
+                                        Correct</span>
+                                </div>
+                                <p class="text-gray-900 dark:text-white mb-3 font-medium">What is the derivative of x²?
+                                </p>
+                                <div class="space-y-2">
+                                    <div class="text-sm">
+                                        <span class="font-medium text-gray-600 dark:text-gray-400">Your answer:</span>
+                                        <span class="text-green-600 font-medium">A) 2x</span>
+                                    </div>
+                                    <div class="text-sm">
+                                        <span class="font-medium text-gray-600 dark:text-gray-400">Correct
+                                            answer:</span>
+                                        <span class="text-green-600 font-medium">A) 2x</span>
+                                    </div>
+                                </div>
+                                <div
+                                    class="mt-3 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-sm text-blue-800 dark:text-blue-200">
+                                    <strong>💡 Explanation:</strong> The derivative of x² is 2x using the power rule
+                                    (d/dx[x^n] = nx^(n-1)).
+                                </div>
+                            </div>
+
+                            <!-- Question 2 Review -->
+                            <div
+                                class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 border-l-4 border-red-500 transform hover:scale-[1.02] transition-all duration-200">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="font-semibold text-gray-900 dark:text-white flex items-center">
+                                        <span
+                                            class="w-6 h-6 bg-red-500 text-white rounded-full text-sm flex items-center justify-center mr-2">2</span>
+                                        Question 2
+                                    </h4>
+                                    <span
+                                        class="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100">✗
+                                        Incorrect</span>
+                                </div>
+                                <p class="text-gray-900 dark:text-white mb-3 font-medium">Solve for x: 2x + 5 = 13</p>
+                                <div class="space-y-2">
+                                    <div class="text-sm">
+                                        <span class="font-medium text-gray-600 dark:text-gray-400">Your answer:</span>
+                                        <span class="text-red-600 font-medium">C) x = 5</span>
+                                    </div>
+                                    <div class="text-sm">
+                                        <span class="font-medium text-gray-600 dark:text-gray-400">Correct
+                                            answer:</span>
+                                        <span class="text-green-600 font-medium">A) x = 4</span>
+                                    </div>
+                                </div>
+                                <div
+                                    class="mt-3 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-sm text-blue-800 dark:text-blue-200">
+                                    <strong>💡 Explanation:</strong> 2x + 5 = 13 → 2x = 13 - 5 → 2x = 8 → x = 4
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="text-center mt-8 space-y-4">
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                            <button onclick="analyzeResults()"
+                                class="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center">
+                                <span class="mr-2">🔍</span>
+                                Analyze Results
+                            </button>
+                            <button onclick="retakeQuiz()"
+                                class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center">
+                                <span class="mr-2">🔄</span>
+                                Retake Quiz
+                            </button>
+                            <button onclick="backToSubjects()"
+                                class="bg-gray-500 text-white px-8 py-3 rounded-xl font-semibold hover:bg-gray-600 transition-colors flex items-center justify-center">
+                                <span class="mr-2">📚</span>
+                                Back to Subjects
+                            </button>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm">Keep practicing to improve your score! 💪
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4 px-6">
+                <div class="text-center">
+                    <p class="text-gray-600 dark:text-gray-400 text-sm">2025 © NeuralNexus</p>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        let sidebarCollapsed = false;
+
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        }
+
+        // Load saved theme
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Toggle Sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleIcon = document.getElementById('sidebar-toggle-icon');
+            const logoFull = document.getElementById('logo-full');
+            const logoMini = document.getElementById('logo-mini');
+            const sidebarTexts = document.querySelectorAll('.sidebar-text');
+            const upgradeSection = document.querySelector('.sidebar-upgrade');
+
+            if (sidebarCollapsed) {
+                sidebar.classList.remove('sidebar-collapsed');
+                sidebar.classList.add('sidebar-expanded');
+                toggleIcon.classList.remove('fa-chevron-right');
+                toggleIcon.classList.add('fa-chevron-left');
+                logoFull.classList.remove('hidden');
+                logoMini.classList.add('hidden');
+                sidebarTexts.forEach(text => text.classList.remove('hidden'));
+                if (upgradeSection) upgradeSection.classList.remove('hidden');
+                sidebarCollapsed = false;
+            } else {
+                sidebar.classList.remove('sidebar-expanded');
+                sidebar.classList.add('sidebar-collapsed');
+                toggleIcon.classList.remove('fa-chevron-left');
+                toggleIcon.classList.add('fa-chevron-right');
+                logoFull.classList.add('hidden');
+                logoMini.classList.remove('hidden');
+                sidebarTexts.forEach(text => text.classList.add('hidden'));
+                if (upgradeSection) upgradeSection.classList.add('hidden');
+                sidebarCollapsed = true;
+            }
+        }
+
+        // Navigation Functions
+        function showConfigModal() {
+            document.getElementById('configModal').classList.remove('hidden');
+        }
+
+        function hideConfigModal() {
+            document.getElementById('configModal').classList.add('hidden');
+        }
+
+        function startQuiz() {
+            document.getElementById('configModal').classList.add('hidden');
+            document.getElementById('subjectSelection').classList.add('hidden');
+            document.getElementById('quizSection').classList.remove('hidden');
+        }
+
+        function showQuestion2() {
+            document.getElementById('quizSection').classList.add('hidden');
+            document.getElementById('question2Section').classList.remove('hidden');
+        }
+
+        function showQuestion1() {
+            document.getElementById('question2Section').classList.add('hidden');
+            document.getElementById('quizSection').classList.remove('hidden');
+        }
+
+        function showResults() {
+            document.getElementById('question2Section').classList.add('hidden');
+            document.getElementById('resultsSection').classList.remove('hidden');
+
+            // Create performance pie chart
+            setTimeout(() => {
+                const ctx = document.getElementById('performanceChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Correct', 'Incorrect'],
+                        datasets: [{
+                            data: [1, 1],
+                            backgroundColor: ['#10B981', '#EF4444'],
+                            borderWidth: 0,
+                            cutout: '60%'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+
+                // Create progress line chart
+                const progressCtx = document.getElementById('progressChart').getContext('2d');
+                new Chart(progressCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                        datasets: [{
+                            label: 'Quiz Performance',
+                            data: [65, 72, 78, 85, 90, 85],
+                            borderColor: '#8B5CF6',
+                            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#8B5CF6',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6,
+                            pointHoverRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                grid: {
+                                    color: 'rgba(148, 163, 184, 0.1)'
+                                },
+                                ticks: {
+                                    color: '#64748b'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    color: 'rgba(148, 163, 184, 0.1)'
+                                },
+                                ticks: {
+                                    color: '#64748b'
+                                }
+                            }
+                        }
+                    }
+                });
+            }, 100);
+        }
+
+        function retakeQuiz() {
+            document.getElementById('resultsSection').classList.add('hidden');
+            document.getElementById('configModal').classList.remove('hidden');
+        }
+
+        function backToSubjects() {
+            document.getElementById('resultsSection').classList.add('hidden');
+            document.getElementById('subjectSelection').classList.remove('hidden');
+        }
+
+        function analyzeResults() {
+            alert('AI Analysis feature will be implemented soon! 🤖');
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - EduTrack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        background: 'var(--background)',
+                        foreground: 'var(--foreground)',
+                        card: 'var(--card)',
+                        'card-foreground': 'var(--card-foreground)',
+                        muted: 'var(--muted)',
+                        'muted-foreground': 'var(--muted-foreground)',
+                        accent: 'var(--accent)',
+                        'accent-foreground': 'var(--accent-foreground)',
+                        border: 'var(--border)',
+                    },
+                    animation: {
+                        'fade-up': 'fadeUp 0.7s ease-out',
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'scale-in': 'scaleIn 0.3s ease-out',
+                        'slide-left': 'slideLeft 0.5s ease-out',
+                        'slide-right': 'slideRight 0.5s ease-out',
+                        'bounce': 'bounce 2s infinite',
+                        'pulse': 'pulse 2s infinite',
+                    },
+                    keyframes: {
+                        fadeUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        scaleIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' }
+                        },
+                        slideLeft: {
+                            '0%': { opacity: '0', transform: 'translateX(-30px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' }
+                        },
+                        slideRight: {
+                            '0%': { opacity: '0', transform: 'translateX(30px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .sidebar-collapsed {
+            width: 60px;
+        }
+
+        .sidebar-expanded {
+            width: 256px;
+        }
+
+        .transition-width {
+            transition: width 0.3s ease;
+        }
+
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark .hover-lift:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .gradient-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+        }
+
+        .dark .gradient-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(59, 130, 246, 0.2) 100%);
+        }
+
+        .premium-blur {
+            filter: blur(8px);
+            pointer-events: none;
+            position: relative;
+        }
+
+        .premium-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dark .premium-overlay {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .premium-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            margin: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .premium-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%) translateY(-100%) rotate(45deg);
+            }
+
+            100% {
+                transform: translateX(100%) translateY(100%) rotate(45deg);
+            }
+        }
+
+        .chain-animation {
+            animation: chainShake 2s infinite ease-in-out;
+        }
+
+        @keyframes chainShake {
+
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+
+            25% {
+                transform: rotate(2deg);
+            }
+
+            75% {
+                transform: rotate(-2deg);
+            }
+        }
+
+        .lock-pulse {
+            animation: lockPulse 2s infinite ease-in-out;
+        }
+
+        @keyframes lockPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="bg-white dark:bg-gray-800 shadow-lg flex flex-col transition-width sidebar-expanded">
+            <!-- Logo -->
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                <div id="logo-full" class="flex items-center">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-white text-sm"></i>
+                    </div>
+                    <span class="ml-3 text-lg font-bold text-gray-900 dark:text-white sidebar-text">EduTrack</span>
+                </div>
+                <div id="logo-mini" class="hidden justify-center w-full">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-white text-sm"></i>
+                    </div>
+                </div>
+                <button onclick="toggleSidebar()" class="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <i id="sidebar-toggle-icon" class="fas fa-chevron-left text-gray-600 dark:text-gray-400"></i>
+                </button>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 px-2 py-4 space-y-1">
+                <a href="dashboard.html"
+                    class="flex items-center px-3 py-2 text-white bg-purple-600 rounded-lg">
+                    <i class="fas fa-home w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Dashboard</span>
+                </a>
+                <a href="notes.html" class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-sticky-note w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">My Notes</span>
+                </a>
+                <a href="quiz.html"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-question-circle w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Quizzes & Tests</span>
+                </a>
+                <a href="#"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-chart-line w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Progress</span>
+                </a>
+                <a href="chatbot.html"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-robot w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">AI Assistant</span>
+                </a>
+                <a href="#"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-calendar w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Study Schedule</span>
+                </a>
+                <a href="paper.html"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-file-alt w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Question Papers</span>
+                </a>
+                <a href="#"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-cog w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Settings</span>
+                </a>
+            </nav>
+
+            <!-- Upgrade to Pro -->
+            <div class="p-4">
+                <div class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-3 text-center sidebar-upgrade">
+                    <p class="text-white text-sm font-medium sidebar-text">Upgrade to Pro</p>
+                </div>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+                            Live Dashboard <i class="fas fa-pencil-alt ml-2 text-purple-500"></i>
+                        </h1>
+
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="toggleTheme()"
+                            class="p-2.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200">
+                            <i id="theme-icon" class="fas fa-moon"></i>
+                        </button>
+
+                        <button
+                            class="relative p-2.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200">
+                            <i class="fas fa-bell"></i>
+                            <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+                        </button>
+
+                        <div class="flex items-center space-x-3 pl-3 border-l border-gray-200 dark:border-gray-700">
+                            <div class="text-right">
+                                <p class="text-sm font-semibold dark:text-white">Samriddho</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Premium Student</p>
+                            </div>
+                            <div
+                                class="w-9 h-9 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                                <i class="fas fa-user text-white text-sm"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="p-6">
+                    <!-- Welcome Message -->
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                            Welcome, Samriddho! ✨
+                        </h1>
+                        <p class="text-gray-600 dark:text-gray-400">Ready to continue your learning journey?</p>
+                    </div>
+
+                    <!-- Stats Cards - Will be blurred -->
+                    <div id="statsCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div
+                            class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white hover-lift">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-book text-2xl"></i>
+                                </div>
+                                <span class="text-2xl font-semibold ml-4">Total Notes</span>
+                            </div>
+                            <p class="text-3xl font-bold mb-1">1,247</p>
+                            <p class="text-sm text-purple-200">+15% this week</p>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white hover-lift">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-question-circle text-2xl"></i>
+                                </div>
+                                <span class="text-2xl font-semibold ml-4">Quizzes Completed</span>
+                            </div>
+                            <p class="text-3xl font-bold mb-1">89</p>
+                            <p class="text-sm text-blue-200">85% accuracy</p>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white hover-lift">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-fire text-2xl"></i>
+                                </div>
+                                <span class="text-2xl font-semibold ml-4">Study Streak</span>
+                            </div>
+                            <p class="text-3xl font-bold mb-1">23</p>
+                            <p class="text-sm text-green-200">days active</p>
+                        </div>
+
+                        <div
+                            class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-6 text-white hover-lift">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-trophy text-2xl"></i>
+                                </div>
+                                <span class="text-2xl font-semibold ml-4">Achievements</span>
+                            </div>
+                            <p class="text-3xl font-bold mb-1">12</p>
+                            <p class="text-sm text-orange-200">badges earned</p>
+                        </div>
+                    </div>
+
+                    <!-- Notes Generation Advertisement - Always visible -->
+                    <div
+                        class="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-2xl p-8 mb-8 hover-lift">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center mb-4">
+                                    <div
+                                        class="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center mr-4">
+                                        <i class="fas fa-magic text-white text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Generate Smart
+                                            Notes
+                                        </h3>
+                                        <p class="text-gray-600 dark:text-gray-400">Upload content and generate
+                                            AI-powered
+                                            study
+                                            notes</p>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                                    <div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
+                                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Input Sources</h4>
+                                        <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                                            <div class="flex items-center"><i
+                                                    class="fas fa-file-pdf text-red-500 mr-2"></i>PDF
+                                                Documents</div>
+                                            <div class="flex items-center"><i
+                                                    class="fab fa-youtube text-red-600 mr-2"></i>YouTube Links</div>
+                                            <div class="flex items-center"><i
+                                                    class="fas fa-video text-blue-500 mr-2"></i>Video
+                                                Files</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
+                                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Note Types</h4>
+                                        <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                                            <div class="flex items-center"><i
+                                                    class="fas fa-align-left text-green-500 mr-2"></i>Descriptive Notes
+                                            </div>
+                                            <div class="flex items-center"><i
+                                                    class="fas fa-list text-blue-500 mr-2"></i>Short
+                                                Notes</div>
+                                            <div class="flex items-center"><i
+                                                    class="fas fa-calculator text-purple-500 mr-2"></i>Formula Based
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
+                                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Features</h4>
+                                        <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                                            <div class="flex items-center"><i
+                                                    class="fas fa-volume-up text-orange-500 mr-2"></i>Audio Format</div>
+                                            <div class="flex items-center"><i
+                                                    class="fas fa-language text-indigo-500 mr-2"></i>Multi-language
+                                            </div>
+                                            <div class="flex items-center"><i
+                                                    class="fas fa-palette text-pink-500 mr-2"></i>Custom Tone</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="notes.html"
+                                    class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg font-semibold hover:from-purple-600 hover:to-blue-600 transition-all">
+                                    <i class="fas fa-rocket mr-2"></i>
+                                    Generate Notes Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="premiumSection" style="position:relative;">
+                        <!-- Premium Subscription Overlay -->
+                        <div id="premiumOverlay" class="premium-overlay">
+                            <div class="premium-card text-white">
+                                <div class="text-center mb-6">
+                                    <div
+                                        class="w-20 h-20 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center lock-pulse">
+                                        <i class="fas fa-crown text-4xl text-yellow-300"></i>
+                                    </div>
+                                    <h2 class="text-3xl font-bold mb-2">Unlock Premium Features</h2>
+                                    <p class="text-lg opacity-90">Get access to all advanced learning tools</p>
+                                </div>
+
+                                <div class="space-y-4 mb-8">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-check text-sm text-white"></i>
+                                        </div>
+                                        <span>📊 Advanced Analytics & Progress Tracking</span>
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-check text-sm text-white"></i>
+                                        </div>
+                                        <span>🎯 Unlimited Quizzes & Tests</span>
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-check text-sm text-white"></i>
+                                        </div>
+                                        <span>📈 Performance Reports & Insights</span>
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-check text-sm text-white"></i>
+                                        </div>
+                                        <span>🤖 Priority AI Assistant Support</span>
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-check text-sm text-white"></i>
+                                        </div>
+                                        <span>📚 Unlimited Question Papers</span>
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-check text-sm text-white"></i>
+                                        </div>
+                                        <span>⏰ Study Schedule & Reminders</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex space-x-4">
+                                    <a href="payment.html"
+                                        class="flex-1 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-3 px-6 rounded-lg transition-colors flex items-center justify-center text-center">
+                                        <i class="fas fa-credit-card mr-2"></i>
+                                        Upgrade Now
+                                    </a>
+
+                                </div>
+
+                                <div class="text-center mt-4">
+                                    <p class="text-sm opacity-75">✨ 7-day free trial • Cancel anytime</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Charts Section - Will be blurred -->
+                        <div id="chartsSection" class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                            <!-- Learning Progress -->
+                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 hover-lift">
+                                <div class="flex items-center mb-6">
+                                    <div
+                                        class="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center mr-3">
+                                        <i class="fas fa-chart-line text-white text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Learning Progress
+                                        </h3>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">Your monthly learning
+                                            journey
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="learningProgressChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Subject Focus -->
+                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 hover-lift">
+                                <div class="flex items-center mb-6">
+                                    <div
+                                        class="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mr-3">
+                                        <i class="fas fa-chart-pie text-white text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Subject Focus</h3>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">Time spent by subject</p>
+                                    </div>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="subjectFocusChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- Quick Actions - Will be blurred -->
+                        <div id="quickActions" class="mb-8">
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Quick Actions</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <div class="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl p-6 text-white hover-lift animate-float"
+                                    style="animation-delay: 0s;">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h3 class="font-bold text-lg">Take Quiz 🧠</h3>
+                                        <i class="fas fa-arrow-right text-xl"></i>
+                                    </div>
+                                    <p class="text-purple-100 text-sm mb-4">Test your knowledge with our AI-powered
+                                        quizzes
+                                    </p>
+                                    <button
+                                        class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                        Start Now
+                                    </button>
+                                </div>
+
+                                <div class="bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl p-6 text-white hover-lift animate-float"
+                                    style="animation-delay: 0.5s;">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h3 class="font-bold text-lg">Study Notes 📚</h3>
+                                        <i class="fas fa-arrow-right text-xl"></i>
+                                    </div>
+                                    <p class="text-blue-100 text-sm mb-4">Access your personalized study materials</p>
+                                    <button
+                                        class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                        View Notes
+                                    </button>
+                                </div>
+
+                                <div class="bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl p-6 text-white hover-lift animate-float"
+                                    style="animation-delay: 1s;">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h3 class="font-bold text-lg">Progress 📈</h3>
+                                        <i class="fas fa-arrow-right text-xl"></i>
+                                    </div>
+                                    <p class="text-green-100 text-sm mb-4">Track your learning journey and achievements
+                                    </p>
+                                    <button
+                                        class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                        View Progress
+                                    </button>
+                                </div>
+
+                                <div class="bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl p-6 text-white hover-lift animate-float"
+                                    style="animation-delay: 1.5s;">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h3 class="font-bold text-lg">AI Tutor 🤖</h3>
+                                        <i class="fas fa-arrow-right text-xl"></i>
+                                    </div>
+                                    <p class="text-yellow-100 text-sm mb-4">Get instant help from our AI assistant</p>
+                                    <button
+                                        class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                        Ask AI
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+
+            <!-- Footer -->
+            <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4">
+                <div class="px-6">
+                    <p class="text-center text-gray-600 dark:text-gray-400 text-sm">
+                        2025 © NeuralNexus
+                    </p>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        let sidebarCollapsed = false;
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleIcon = document.getElementById('sidebar-toggle-icon');
+            const logoFull = document.getElementById('logo-full');
+            const logoMini = document.getElementById('logo-mini');
+            const sidebarTexts = document.querySelectorAll('.sidebar-text');
+            const upgradeSection = document.querySelector('.sidebar-upgrade');
+
+            if (sidebarCollapsed) {
+                sidebar.classList.remove('sidebar-collapsed');
+                sidebar.classList.add('sidebar-expanded');
+                toggleIcon.classList.remove('fa-chevron-right');
+                toggleIcon.classList.add('fa-chevron-left');
+                logoFull.classList.remove('hidden');
+                logoMini.classList.add('hidden');
+                sidebarTexts.forEach(text => text.classList.remove('hidden'));
+                if (upgradeSection) upgradeSection.classList.remove('hidden');
+                sidebarCollapsed = false;
+            } else {
+                sidebar.classList.remove('sidebar-expanded');
+                sidebar.classList.add('sidebar-collapsed');
+                toggleIcon.classList.remove('fa-chevron-left');
+                toggleIcon.classList.add('fa-chevron-right');
+                logoFull.classList.add('hidden');
+                logoMini.classList.remove('hidden');
+                sidebarTexts.forEach(text => text.classList.add('hidden'));
+                if (upgradeSection) upgradeSection.classList.add('hidden');
+                sidebarCollapsed = true;
+            }
+        }
+
+        // Theme Toggle
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        }
+
+        // Load saved theme
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Premium functionality
+        function hidePremiumOverlay() {
+            document.getElementById('premiumOverlay').classList.add('hidden');
+            document.getElementById('chainDecorations').classList.add('hidden');
+
+            // Remove blur from restricted sections
+            const restrictedSections = ['chartsSection', 'weeklyActivity', 'performanceSection', 'quickActions'];
+            restrictedSections.forEach(id => {
+                document.getElementById(id).classList.remove('premium-blur');
+            });
+        }
+
+        function redirectToPayment() {
+            window.location.href = 'payment.html';
+        }
+
+        // Apply blur effect on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            // Learning Progress Chart
+            const learningProgressCtx = document.getElementById('learningProgressChart').getContext('2d');
+            new Chart(learningProgressCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Progress',
+                        data: [65, 72, 78, 85, 92, 88],
+                        borderColor: '#8B5CF6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#8B5CF6',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#6B7280'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(107, 114, 128, 0.1)'
+                            },
+                            ticks: {
+                                color: '#6B7280'
+                            },
+                            min: 0,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            // Subject Focus Pie Chart
+            const subjectFocusCtx = document.getElementById('subjectFocusChart').getContext('2d');
+            new Chart(subjectFocusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Mathematics: 35%', 'Physics: 25%', 'Chemistry: 20%', 'Biology: 20%'],
+                    datasets: [{
+                        data: [35, 25, 20, 20],
+                        backgroundColor: ['#8B5CF6', '#06B6D4', '#10B981', '#F59E0B'],
+                        borderWidth: 0,
+                        cutout: '60%'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                padding: 20,
+                                color: '#6B7280',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Weekly Activity Bar Chart
+            const weeklyActivityCtx = document.getElementById('weeklyActivityChart').getContext('2d');
+            new Chart(weeklyActivityCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Study Hours',
+                        data: [3.5, 4.2, 2.8, 5.1, 3.8, 6.2, 4.5],
+                        backgroundColor: '#06B6D4',
+                        borderRadius: 4,
+                        maxBarThickness: 40
+                    }, {
+                        label: 'Quiz Performance',
+                        data: [2, 3, 1, 4, 2, 5, 3],
+                        backgroundColor: '#8B5CF6',
+                        borderRadius: 4,
+                        maxBarThickness: 40
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            align: 'center',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                padding: 20,
+                                color: '#6B7280'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#6B7280'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(107, 114, 128, 0.1)'
+                            },
+                            ticks: {
+                                color: '#6B7280'
+                            },
+                            max: 8
+                        }
+                    }
+                }
+            });
+
+            // Performance Chart
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(performanceCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Math', 'Physics', 'Chemistry', 'Biology'],
+                    datasets: [{
+                        data: [85, 78, 92, 88],
+                        backgroundColor: '#10B981',
+                        borderRadius: 4,
+                        maxBarThickness: 60
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#6B7280'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(107, 114, 128, 0.1)'
+                            },
+                            ticks: {
+                                color: '#6B7280'
+                            },
+                            min: 0,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            // Apply blur effect on page load
+            const restrictedSections = ['chartsSection', 'weeklyActivity', 'performanceSection', 'quickActions'];
+            restrictedSections.forEach(id => {
+                document.getElementById(id).classList.add('premium-blur');
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Long Answer Quiz - EduTrack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        background: 'var(--background)',
+                        foreground: 'var(--foreground)',
+                        card: 'var(--card)',
+                        'card-foreground': 'var(--card-foreground)',
+                        muted: 'var(--muted)',
+                        'muted-foreground': 'var(--muted-foreground)',
+                        accent: 'var(--accent)',
+                        'accent-foreground': 'var(--accent-foreground)',
+                        border: 'var(--border)',
+                    },
+                    animation: {
+                        'fade-up': 'fadeUp 0.7s ease-out',
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'scale-in': 'scaleIn 0.3s ease-out',
+                        'slide-left': 'slideLeft 0.5s ease-out',
+                        'slide-right': 'slideRight 0.5s ease-out',
+                        'bounce': 'bounce 2s infinite',
+                        'pulse': 'pulse 2s infinite',
+                    },
+                    keyframes: {
+                        fadeUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        scaleIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' }
+                        },
+                        slideLeft: {
+                            '0%': { opacity: '0', transform: 'translateX(-30px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' }
+                        },
+                        slideRight: {
+                            '0%': { opacity: '0', transform: 'translateX(30px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .sidebar-collapsed {
+            width: 60px;
+        }
+
+        .sidebar-expanded {
+            width: 256px;
+        }
+
+        .transition-width {
+            transition: width 0.3s ease;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .recording {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="bg-white dark:bg-gray-800 shadow-lg flex flex-col transition-width sidebar-expanded">
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                <div id="logo-full" class="flex items-center">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-white text-sm"></i>
+                    </div>
+                    <span class="ml-3 text-lg font-bold text-gray-900 dark:text-white sidebar-text">EduTrack</span>
+                </div>
+                <div id="logo-mini" class="hidden justify-center w-full">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-white text-sm"></i>
+                    </div>
+                </div>
+                <button onclick="toggleSidebar()" class="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <i id="sidebar-toggle-icon" class="fas fa-chevron-left text-gray-600 dark:text-gray-400"></i>
+                </button>
+            </div>
+
+            <nav class="flex-1 px-2 py-4 space-y-1">
+                <a href="dashboard.html"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-home w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Dashboard</span>
+                </a>
+                <a href="notes.html"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-sticky-note w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">My Notes</span>
+                </a>
+                <a href="quiz.html" class="flex items-center px-3 py-2 text-white bg-purple-600 rounded-lg">
+                    <i class="fas fa-question-circle w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Quizzes & Tests</span>
+                </a>
+                <a href="#"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-chart-line w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Progress</span>
+                </a>
+                <a href="chatbot.html"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-robot w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">AI Assistant</span>
+                </a>
+                <a href="#"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-calendar w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Study Schedule</span>
+                </a>
+                <a href="paper.html"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-file-alt w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Question Papers</span>
+                </a>
+                <a href="#"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-cog w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Settings</span>
+                </a>
+            </nav>
+
+            <div class="p-4">
+                <div class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-3 text-center sidebar-upgrade">
+                    <p class="text-white text-sm font-medium sidebar-text">Upgrade to Pro</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+                            Long Answer Quiz <i class="fas fa-edit ml-2 text-green-500"></i>
+                        </h1>
+                        <p class="text-gray-600 dark:text-gray-400 mt-1">Demonstrate your deep understanding</p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="toggleTheme()"
+                            class="p-2.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200">
+                            <i id="theme-icon" class="fas fa-moon"></i>
+                        </button>
+
+                        <button
+                            class="relative p-2.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200">
+                            <i class="fas fa-bell"></i>
+                            <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+                        </button>
+
+                        <div class="flex items-center space-x-3 pl-3 border-l border-gray-200 dark:border-gray-700">
+                            <div class="text-right">
+                                <p class="text-sm font-semibold dark:text-white">Samriddho</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Premium Student</p>
+                            </div>
+                            <div
+                                class="w-9 h-9 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                                <i class="fas fa-user text-white text-sm"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Quiz Content -->
+            <div class="flex-1 overflow-y-auto p-6">
+                <div class="max-w-4xl mx-auto">
+                    <!-- Quiz Header -->
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-xl p-6 mb-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Physics Long Quiz</h2>
+                                <p class="text-gray-600 dark:text-gray-400">Question <span class="font-semibold"
+                                        id="currentQuestion">1</span> of <span class="font-semibold">2</span></p>
+                            </div>
+                            <div class="text-2xl font-mono font-bold text-gray-900 dark:text-white">15:00</div>
+                        </div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div class="bg-gradient-to-r from-green-600 to-teal-600 h-2 rounded-full transition-all duration-300"
+                                style="width: 50%" id="progressBar"></div>
+                        </div>
+                    </div>
+
+                    <!-- Question 1 -->
+                    <div id="question1"
+                        class="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-200 dark:border-gray-700 animate-fade-in">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">1. Explain Einstein's
+                                Theory of Special Relativity and its implications on our understanding of space and
+                                time.</h3>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">Provide a comprehensive explanation
+                                including key concepts, postulates, and real-world applications (minimum 200 words)</p>
+                        </div>
+
+                        <div class="space-y-4 mb-8">
+                            <div class="relative">
+                                <textarea id="answer1" placeholder="Begin your detailed answer here..."
+                                    class="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                                    rows="8"></textarea>
+                                <button onclick="toggleRecording(1)" id="micBtn1"
+                                    class="absolute bottom-3 right-3 p-2 bg-green-500 hover:bg-green-600 text-white rounded-full transition-colors">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                            </div>
+                            <div id="recordingStatus1" class="hidden text-sm text-red-500 flex items-center">
+                                <i class="fas fa-circle recording mr-2"></i>
+                                Recording... Click the mic to stop
+                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                Word count: <span id="wordCount1">0</span> / 200 minimum
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <button class="bg-gray-400 text-white px-6 py-2 rounded-lg cursor-not-allowed"
+                                disabled>Previous</button>
+                            <button onclick="showQuestion2()"
+                                class="bg-gradient-to-r from-green-600 to-teal-600 text-white px-6 py-2 rounded-lg hover:from-green-700 hover:to-teal-700 transition-all">Next
+                                Question</button>
+                        </div>
+                    </div>
+
+                    <!-- Question 2 -->
+                    <div id="question2"
+                        class="hidden bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-200 dark:border-gray-700 animate-fade-in">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">2. Discuss the
+                                principles of quantum mechanics and how they differ from classical physics. Include
+                                examples of quantum phenomena.</h3>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">Write a detailed essay covering
+                                wave-particle duality, uncertainty principle, and quantum superposition with relevant
+                                examples (minimum 250 words)</p>
+                        </div>
+
+                        <div class="space-y-4 mb-8">
+                            <div class="relative">
+                                <textarea id="answer2" placeholder="Begin your detailed answer here..."
+                                    class="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                                    rows="10"></textarea>
+                                <button onclick="toggleRecording(2)" id="micBtn2"
+                                    class="absolute bottom-3 right-3 p-2 bg-green-500 hover:bg-green-600 text-white rounded-full transition-colors">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                            </div>
+                            <div id="recordingStatus2" class="hidden text-sm text-red-500 flex items-center">
+                                <i class="fas fa-circle recording mr-2"></i>
+                                Recording... Click the mic to stop
+                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                Word count: <span id="wordCount2">0</span> / 250 minimum
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <button onclick="showQuestion1()"
+                                class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors">Previous</button>
+                            <button onclick="showResults()"
+                                class="bg-gradient-to-r from-green-600 to-teal-600 text-white px-6 py-2 rounded-lg hover:from-green-700 hover:to-teal-700 transition-all">Finish
+                                Quiz</button>
+                        </div>
+                    </div>
+
+                    <!-- Results -->
+                    <div id="results"
+                        class="hidden bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-200 dark:border-gray-700 animate-fade-in">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Long Quiz Completed! 🎓
+                            </h2>
+                            <div
+                                class="bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-xl p-6 inline-block">
+                                <div class="text-2xl font-bold mb-2">Essays Submitted</div>
+                                <div class="text-lg opacity-90">Your detailed answers have been recorded</div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6 mb-8">
+                            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Question 1: Einstein's
+                                    Special Relativity</h4>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm mb-2">Your comprehensive answer will
+                                    be evaluated for:</p>
+                                <ul class="text-sm text-gray-600 dark:text-gray-400 list-disc list-inside">
+                                    <li>Understanding of key concepts</li>
+                                    <li>Explanation of postulates</li>
+                                    <li>Real-world applications</li>
+                                    <li>Clarity and depth of explanation</li>
+                                </ul>
+                            </div>
+                            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Question 2: Quantum
+                                    Mechanics Principles</h4>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm mb-2">Your detailed essay will be
+                                    evaluated for:</p>
+                                <ul class="text-sm text-gray-600 dark:text-gray-400 list-disc list-inside">
+                                    <li>Wave-particle duality explanation</li>
+                                    <li>Uncertainty principle understanding</li>
+                                    <li>Quantum superposition concepts</li>
+                                    <li>Relevant examples and applications</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="text-center space-y-4">
+                            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                                <button onclick="analyzeAnswers()"
+                                    class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center">
+                                    <span class="mr-2">🔍</span>
+                                    Analyze Essays
+                                </button>
+                                <button onclick="retakeQuiz()"
+                                    class="bg-gradient-to-r from-green-600 to-teal-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-green-700 hover:to-teal-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center">
+                                    <span class="mr-2">🔄</span>
+                                    Retake Quiz
+                                </button>
+                                <button onclick="backToQuizzes()"
+                                    class="bg-gray-500 text-white px-8 py-3 rounded-xl font-semibold hover:bg-gray-600 transition-colors flex items-center justify-center">
+                                    <span class="mr-2">📚</span>
+                                    Back to Quizzes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4 px-6">
+                <div class="text-center">
+                    <p class="text-gray-600 dark:text-gray-400 text-sm">2025 © NeuralNexus</p>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        let sidebarCollapsed = false;
+        let recordingStates = { 1: false, 2: false };
+
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        }
+
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleIcon = document.getElementById('sidebar-toggle-icon');
+            const logoFull = document.getElementById('logo-full');
+            const logoMini = document.getElementById('logo-mini');
+            const sidebarTexts = document.querySelectorAll('.sidebar-text');
+            const upgradeSection = document.querySelector('.sidebar-upgrade');
+
+            if (sidebarCollapsed) {
+                sidebar.classList.remove('sidebar-collapsed');
+                sidebar.classList.add('sidebar-expanded');
+                toggleIcon.classList.remove('fa-chevron-right');
+                toggleIcon.classList.add('fa-chevron-left');
+                logoFull.classList.remove('hidden');
+                logoMini.classList.add('hidden');
+                sidebarTexts.forEach(text => text.classList.remove('hidden'));
+                if (upgradeSection) upgradeSection.classList.remove('hidden');
+                sidebarCollapsed = false;
+            } else {
+                sidebar.classList.remove('sidebar-expanded');
+                sidebar.classList.add('sidebar-collapsed');
+                toggleIcon.classList.remove('fa-chevron-left');
+                toggleIcon.classList.add('fa-chevron-right');
+                logoFull.classList.add('hidden');
+                logoMini.classList.remove('hidden');
+                sidebarTexts.forEach(text => text.classList.add('hidden'));
+                if (upgradeSection) upgradeSection.classList.add('hidden');
+                sidebarCollapsed = true;
+            }
+        }
+
+        function showQuestion2() {
+            document.getElementById('question1').classList.add('hidden');
+            document.getElementById('question2').classList.remove('hidden');
+            document.getElementById('currentQuestion').textContent = '2';
+            document.getElementById('progressBar').style.width = '100%';
+        }
+
+        function showQuestion1() {
+            document.getElementById('question2').classList.add('hidden');
+            document.getElementById('question1').classList.remove('hidden');
+            document.getElementById('currentQuestion').textContent = '1';
+            document.getElementById('progressBar').style.width = '50%';
+        }
+
+        function showResults() {
+            document.getElementById('question2').classList.add('hidden');
+            document.getElementById('results').classList.remove('hidden');
+        }
+
+        function toggleRecording(questionNum) {
+            const micBtn = document.getElementById(`micBtn${questionNum}`);
+            const recordingStatus = document.getElementById(`recordingStatus${questionNum}`);
+
+            if (!recordingStates[questionNum]) {
+                recordingStates[questionNum] = true;
+                micBtn.classList.add('bg-red-500', 'recording');
+                micBtn.classList.remove('bg-green-500');
+                recordingStatus.classList.remove('hidden');
+            } else {
+                recordingStates[questionNum] = false;
+                micBtn.classList.remove('bg-red-500', 'recording');
+                micBtn.classList.add('bg-green-500');
+                recordingStatus.classList.add('hidden');
+                alert('Recording stopped. Speech-to-text functionality will be implemented.');
+            }
+        }
+
+        // Word count tracking
+        document.getElementById('answer1').addEventListener('input', function () {
+            const wordCount = this.value.trim().split(/\s+/).filter(word => word.length > 0).length;
+            document.getElementById('wordCount1').textContent = wordCount;
+        });
+
+        document.getElementById('answer2').addEventListener('input', function () {
+            const wordCount = this.value.trim().split(/\s+/).filter(word => word.length > 0).length;
+            document.getElementById('wordCount2').textContent = wordCount;
+        });
+
+        function analyzeAnswers() {
+            alert('AI Analysis of your detailed essays will be implemented soon! 🤖');
+        }
+
+        function retakeQuiz() {
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('question1').classList.remove('hidden');
+            document.getElementById('currentQuestion').textContent = '1';
+            document.getElementById('progressBar').style.width = '50%';
+            document.getElementById('answer1').value = '';
+            document.getElementById('answer2').value = '';
+            document.getElementById('wordCount1').textContent = '0';
+            document.getElementById('wordCount2').textContent = '0';
+        }
+
+        function backToQuizzes() {
+            window.location.href = 'quiz.html';
+        }
+    </script>
+</body>
+
+</html>
