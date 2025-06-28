@@ -12,12 +12,11 @@ from langchain.schema import Document
 import pypandoc
 from docx2pdf import convert
 from datetime import datetime
+import regex as re
+import pythoncom
+from app.youtubeNotesGenerator import get_transcript, language_convertor, notes_generator
 
 WORKDIR = os.getcwd()
-md_file = os.path.join(WORKDIR, "notes.md")
-docx_file = os.path.join(WORKDIR, "Physics_Notes.docx")
-pdf_file  = os.path.join(WORKDIR, "Physics_Notes.pdf")
-
 ALLOWED_EXTENSIONS = {'pdf', 'mp4', 'mov', 'avi'}
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -45,6 +44,12 @@ def login_required_user(f):
             return redirect(url_for('signin'))
         return f(*args, **kwargs)
     return decorated_function
+
+def extract_yt_id(url):
+    # quick regex for typical YouTube URLs
+    m = re.search(r'(?:v=|youtu\.be/)([A-Za-z0-9_-]{11})', url)
+    return m.group(1) if m else None
+
 
 @app.route('/home')
 @app.route('/')
@@ -152,102 +157,425 @@ def upload_pdf():
 @login_required_user
 @csrf.exempt
 def generate_notes():
-    card_type = request.form.get('card_type')  
+    card_type = request.form.get('card_type')  # 'descriptive', 'short', 'formula' etc.
     tone     = request.form.get('tone')
     language = request.form.get('language')
     audio    = bool(request.form.get('audio'))
 
-    pdf = request.files.get('pdf_file')  
-    if not pdf or pdf.filename == '':
-        flash('Please upload a PDF file.', 'warning')
-        return redirect(request.referrer)
+    if card_type=="short":
+        source = request.form.get('short-source')
+        if source == "pdf":
+            pdf = request.files.get('pdf_file')
+            if not pdf or pdf.filename == '':
+                flash('Please upload a PDF file.', 'warning')
+                return redirect(request.referrer)
+            if not allowed_file(pdf.filename):
+                flash('Only PDF files are allowed.', 'error')
+                return redirect(request.referrer)
+            filename = secure_filename(f"{get_current_user().id}_{pdf.filename}")
+            save_path = os.path.join(UPLOAD_FOLDER, filename)
+            pdf.save(save_path)
+            current_app.logger.info(
+                f"User {get_current_user().id} generated {card_type} notes "
+                f"(tone={tone}, lang={language}, audio={audio}), file saved as {filename}"
+            )
+            notes_type="Short"
 
-    if not allowed_file(pdf.filename):
-        flash('Only PDF files are allowed.', 'error')
-        return redirect(request.referrer)
+            path="HexaFalls\\app\\uploads\\"+filename
+            print(path)
+            pages=render_pdf_to_images(path, zoom=3.0)
+            sym=load_symspell()
+            vocab=load_domain_vocab()
 
-    filename = secure_filename(f"{get_current_user().id}_{pdf.filename}")
-    save_path = os.path.join(UPLOAD_FOLDER, filename)
-    pdf.save(save_path)
+            all_texts=[]
+            for i, pg in enumerate(pages, 1):
+                proc=preprocess_image(pg, method='minimal', deskew=False)
+                raw=ocr_image(proc, psm=3)
+                corrected=correct_spelling_symspell(raw, sym)
+                filtered=filter_domain(corrected, vocab)
 
-    current_app.logger.info(
-        f"User {get_current_user().id} generated {card_type} notes "
-        f"(tone={tone}, lang={language}, audio={audio}), file saved as {filename}"
-    )
-    notes_type=""
-    if card_type=="descriptive":
-        notes_type="Descriptive"
+                all_texts.append(f"---Page {i} ---")
+                all_texts.append(filtered)
 
-    path="HexaFalls\\app\\uploads\\"+filename
-    print(path)
-    pages=render_pdf_to_images(path, zoom=3.0)
-    sym=load_symspell()
-    vocab=load_domain_vocab()
+                print(f"Processed page {i}, chars: {len(filtered)}")
+            output='text_chapters\\text'+filename[:-3]+"txt"
 
-    all_texts=[]
-    for i, pg in enumerate(pages, 1):
-        proc=preprocess_image(pg, method='minimal', deskew=False)
-        raw=ocr_image(proc, psm=3)
-        corrected=correct_spelling_symspell(raw, sym)
-        filtered=filter_domain(corrected, vocab)
+            with open(output, 'w', encoding='utf-8') as out:
+                out.write(''.join(all_texts))
 
-        all_texts.append(f"---Page {i} ---")
-        all_texts.append(filtered)
+            print("All pages saved to combined_output.txt")
 
-        print(f"Processed page {i}, chars: {len(filtered)}")
+            docs=[]
+            with open(output, "r", encoding="utf-8") as f:
+                text = f.read()
+            
+            
+            summary = ai_summarise(text, subject="Physics")
+            key_points=points_extractor(text)
+            
+            doc=Document(
+                page_content=text,
+                metadata={
+                    "summary": summary,
+                    "key_points": key_points,
+                    "file_name": output
+                }
+            )
+            docs.append(doc)
 
-    with open('text_chapters\\chapter03.txt', 'w', encoding='utf-8') as out:
-        out.write(''.join(all_texts))
+            final_notes=getFinalNotes(docs, notes_type, tone, language=language)
+            print(final_notes)
 
-    print("All pages saved to combined_output.txt")
+            md_file = os.path.join(WORKDIR, filename[:-3]+"md")
+            docx_file = os.path.join(WORKDIR, filename[:-3]+"docx")
+            pdf_file  = os.path.join(WORKDIR, filename)
 
-    docs=[]
-    for fname in os.listdir("text_chapters"):
-        chapter_number=extract_chapter_number(fname)
-        if chapter_number is None:
-            continue
-        with open(os.path.join("text_chapters", fname), "r", encoding="utf-8") as f:
-            text = f.read()
-        
-        
-        summary = ai_summarise(text, subject="Physics")
-        key_points=points_extractor(text)
-        
-        doc=Document(
-            page_content=text,
-            metadata={
-                "chapter": chapter_number,
-                "summary": summary,
-                "key_points": key_points,
-                "file_name": fname
-            }
-        )
-        docs.append(doc)
 
-    final_notes=getFinalNotes(docs, notes_type, tone, language=language)
-    print(final_notes)
+            with open(md_file, "w", encoding="utf-8") as f:
+                f.write(final_notes.strip())
+            print(f"[{datetime.now()}] Wrote Markdown → {md_file}")
 
-    with open(md_file, "w", encoding="utf-8") as f:
-        f.write(final_notes.strip())
-    print(f"[{datetime.now()}] Wrote Markdown → {md_file}")
+            pypandoc.convert_file(
+                source_file=md_file,
+                to="docx",
+                outputfile=docx_file,
+                extra_args=[
+                    "--toc",            
+                    "--toc-depth=2",    
+                ]
+            )
+            print(f"[{datetime.now()}] Converted → {docx_file}")
+            pythoncom.CoInitialize()
+            try:
+                convert(docx_file, pdf_file)
+            finally:
+                pythoncom.CoUninitialize()
+            print(f"[{datetime.now()}] Converted → {pdf_file}")
 
-    pypandoc.convert_file(
-        source_file=md_file,
-        to="docx",
-        outputfile=docx_file,
-        extra_args=[
-            "--toc",            
-            "--toc-depth=2",    
-        ]
-    )
-    print(f"[{datetime.now()}] Converted → {docx_file}")
+            uploaded_filename = pdf_file
 
-    convert(docx_file, pdf_file)
-    print(f"[{datetime.now()}] Converted → {pdf_file}")
+        elif source=="youtube":
+            youtube_url=request.form.get('youtube_url')
+            if not youtube_url:
+                flash('Please enter a YouTube URL.', 'warning')
+                return redirect(request.referrer)
+            youtube_id=extract_yt_id(youtube_url)
+            print(youtube_id)
+            transcript=get_transcript(youtube_id)
+            if transcript:
+                converted_transcript=language_convertor(transcript, target_language='en')
+                final_notes=notes_generator(converted_transcript, notes_type="Short", tone=tone)
 
+                with open(md_file, "w", encoding="utf-8") as f:
+                    f.write(final_notes.strip())
+                print(f"[{datetime.now()}] Wrote Markdown → {md_file}")
+
+                pypandoc.convert_file(
+                    source_file=md_file,
+                    to="docx",
+                    outputfile=docx_file,
+                    extra_args=[
+                        "--toc",            
+                        "--toc-depth=2",    
+                    ]
+                )
+                print(f"[{datetime.now()}] Converted → {docx_file}")
+
+                pythoncom.CoInitialize()
+                try:
+                    convert(docx_file, pdf_file)
+                finally:
+                    pythoncom.CoUninitialize()                              
+                print(f"[{datetime.now()}] Converted → {pdf_file}")
+
+                uploaded_filename = pdf_file
+            else:
+                return redirect(request.referrer)
+        else:
+            flash('Please select a source.', 'warning')
+            return redirect(request.referrer)
+
+        return render_template('notes.html', uploaded_filename=uploaded_filename)
     
+    elif card_type=="descriptive":
+        source = request.form.get('descriptive-source')
+        if source == "pdf":
+            pdf = request.files.get('pdf_file')
+            if not pdf or pdf.filename == '':
+                flash('Please upload a PDF file.', 'warning')
+                return redirect(request.referrer)
+            if not allowed_file(pdf.filename):
+                flash('Only PDF files are allowed.', 'error')
+                return redirect(request.referrer)
+            filename = secure_filename(f"{get_current_user().id}_{pdf.filename}")
+            save_path = os.path.join(UPLOAD_FOLDER, filename)
+            pdf.save(save_path)
+            current_app.logger.info(
+                f"User {get_current_user().id} generated {card_type} notes "
+                f"(tone={tone}, lang={language}, audio={audio}), file saved as {filename}"
+            )
+            notes_type="Descriptive"
+
+            path="HexaFalls\\app\\uploads\\"+filename
+            print(path)
+            pages=render_pdf_to_images(path, zoom=3.0)
+            sym=load_symspell()
+            vocab=load_domain_vocab()
+
+            all_texts=[]
+            for i, pg in enumerate(pages, 1):
+                proc=preprocess_image(pg, method='minimal', deskew=False)
+                raw=ocr_image(proc, psm=3)
+                corrected=correct_spelling_symspell(raw, sym)
+                filtered=filter_domain(corrected, vocab)
+
+                all_texts.append(f"---Page {i} ---")
+                all_texts.append(filtered)
+
+                print(f"Processed page {i}, chars: {len(filtered)}")
+            
+            output='text_chapters\\text'+filename[:-3]+"txt"
+
+            with open(output, 'w', encoding='utf-8') as out:
+                out.write(''.join(all_texts))
+
+            print("All pages saved to combined_output.txt")
+
+            docs=[]
+            for fname in os.listdir("text_chapters"):
+                chapter_number=extract_chapter_number(fname)
+                if chapter_number is None:
+                    continue
+                with open(os.path.join("text_chapters", fname), "r", encoding="utf-8") as f:
+                    text = f.read()
+                
+                
+                summary = ai_summarise(text, subject="Physics")
+                key_points=points_extractor(text)
+                
+                doc=Document(
+                    page_content=text,
+                    metadata={
+                        "chapter": chapter_number,
+                        "summary": summary,
+                        "key_points": key_points,
+                        "file_name": output
+                    }
+                )
+                docs.append(doc)
+
+            final_notes=getFinalNotes(docs, notes_type, tone, language=language)
+            print(final_notes)
+
+            md_file = os.path.join(WORKDIR, filename[:-3]+"md")
+            docx_file = os.path.join(WORKDIR, filename[:-3]+"docx")
+            pdf_file  = os.path.join(WORKDIR, filename)
+
+            with open(md_file, "w", encoding="utf-8") as f:
+                f.write(final_notes.strip())
+            print(f"[{datetime.now()}] Wrote Markdown → {md_file}")
+
+            pypandoc.convert_file(
+                source_file=md_file,
+                to="docx",
+                outputfile=docx_file,
+                extra_args=[
+                    "--toc",            
+                    "--toc-depth=2",    
+                ]
+            )
+            print(f"[{datetime.now()}] Converted → {docx_file}")
+            pythoncom.CoInitialize()
+            try:
+                convert(docx_file, pdf_file)
+            finally:
+                pythoncom.CoUninitialize()
+            print(f"[{datetime.now()}] Converted → {pdf_file}")
+
+            uploaded_filename = pdf_file
+
+        elif source=="youtube":
+            youtube_url=request.form.get('youtube_url')
+            if not youtube_url:
+                flash('Please enter a YouTube URL.', 'warning')
+                return redirect(request.referrer)
+            youtube_id=extract_yt_id(youtube_url)
+            print(youtube_id)
+            transcript=get_transcript(youtube_id)
+            if transcript:
+                converted_transcript=language_convertor(transcript, target_language='en')
+                final_notes=notes_generator(converted_transcript, notes_type="descriptive", tone=tone)
+
+                with open(md_file, "w", encoding="utf-8") as f:
+                    f.write(final_notes.strip())
+                print(f"[{datetime.now()}] Wrote Markdown → {md_file}")
+
+                pypandoc.convert_file(
+                    source_file=md_file,
+                    to="docx",
+                    outputfile=docx_file,
+                    extra_args=[
+                        "--toc",            
+                        "--toc-depth=2",    
+                    ]
+                )
+                print(f"[{datetime.now()}] Converted → {docx_file}")
+
+                pythoncom.CoInitialize()
+                try:
+                    convert(docx_file, pdf_file)
+                finally:
+                    pythoncom.CoUninitialize()                              
+                print(f"[{datetime.now()}] Converted → {pdf_file}")
+
+                uploaded_filename = pdf_file
+            else:
+                return redirect(request.referrer)
+        else:
+            flash('Please select a source.', 'warning')
+            return redirect(request.referrer)
+
+        return render_template('notes.html', uploaded_filename=uploaded_filename)
     
-    return redirect(url_for('upload_pdf'))
+    else:
+        notes_type="Formula-based"
+        source = request.form.get('formula-source')
+        if source == "pdf":
+            pdf = request.files.get('pdf_file')
+            if not pdf or pdf.filename == '':
+                flash('Please upload a PDF file.', 'warning')
+                return redirect(request.referrer)
+            if not allowed_file(pdf.filename):
+                flash('Only PDF files are allowed.', 'error')
+                return redirect(request.referrer)
+            filename = secure_filename(f"{get_current_user().id}_{pdf.filename}")
+            save_path = os.path.join(UPLOAD_FOLDER, filename)
+            pdf.save(save_path)
+            current_app.logger.info(
+                f"User {get_current_user().id} generated {card_type} notes "
+                f"(tone={tone}, lang={language}, audio={audio}), file saved as {filename}"
+            )
+
+            path="HexaFalls\\app\\uploads\\"+filename
+            print(path)
+            pages=render_pdf_to_images(path, zoom=3.0)
+            sym=load_symspell()
+            vocab=load_domain_vocab()
+
+            all_texts=[]
+            for i, pg in enumerate(pages, 1):
+                proc=preprocess_image(pg, method='minimal', deskew=False)
+                raw=ocr_image(proc, psm=3)
+                corrected=correct_spelling_symspell(raw, sym)
+                filtered=filter_domain(corrected, vocab)
+
+                all_texts.append(f"---Page {i} ---")
+                all_texts.append(filtered)
+
+                print(f"Processed page {i}, chars: {len(filtered)}")
+            output='text_chapters\\text'+filename[:-3]+"txt"
+
+            with open(output, 'w', encoding='utf-8') as out:
+                out.write(''.join(all_texts))
+
+            print("All pages saved to combined_output.txt")
+
+            docs=[]
+            for fname in os.listdir("text_chapters"):
+                chapter_number=extract_chapter_number(fname)
+                if chapter_number is None:
+                    continue
+                with open(os.path.join("text_chapters", fname), "r", encoding="utf-8") as f:
+                    text = f.read()
+                
+                
+                summary = ai_summarise(text, subject="Physics")
+                key_points=points_extractor(text)
+                
+                doc=Document(
+                    page_content=text,
+                    metadata={
+                        "chapter": chapter_number,
+                        "summary": summary,
+                        "key_points": key_points,
+                        "file_name": fname
+                    }
+                )
+                docs.append(doc)
+
+            final_notes=getFinalNotes(docs, notes_type, tone, language=language)
+            print(final_notes)
+
+            md_file = os.path.join(WORKDIR, filename[:-3]+"md")
+            docx_file = os.path.join(WORKDIR, filename[:-3]+"docx")
+            pdf_file  = os.path.join(WORKDIR, filename)
+
+            with open(md_file, "w", encoding="utf-8") as f:
+                f.write(final_notes.strip())
+            print(f"[{datetime.now()}] Wrote Markdown → {md_file}")
+
+            pypandoc.convert_file(
+                source_file=md_file,
+                to="docx",
+                outputfile=docx_file,
+                extra_args=[
+                    "--toc",            
+                    "--toc-depth=2",    
+                ]
+            )
+            print(f"[{datetime.now()}] Converted → {docx_file}")
+            pythoncom.CoInitialize()
+            try:
+                convert(docx_file, pdf_file)
+            finally:
+                pythoncom.CoUninitialize()
+            print(f"[{datetime.now()}] Converted → {pdf_file}")
+
+            uploaded_filename = pdf_file
+
+        elif source=="youtube":
+            youtube_url=request.form.get('youtube_url')
+            if not youtube_url:
+                flash('Please enter a YouTube URL.', 'warning')
+                return redirect(request.referrer)
+            youtube_id=extract_yt_id(youtube_url)
+            print(youtube_id)
+            transcript=get_transcript(youtube_id)
+            if transcript:
+                converted_transcript=language_convertor(transcript, target_language='en')
+                final_notes=notes_generator(converted_transcript, notes_type="formula", tone=tone)
+
+                with open(md_file, "w", encoding="utf-8") as f:
+                    f.write(final_notes.strip())
+                print(f"[{datetime.now()}] Wrote Markdown → {md_file}")
+
+                pypandoc.convert_file(
+                    source_file=md_file,
+                    to="docx",
+                    outputfile=docx_file,
+                    extra_args=[
+                        "--toc",            
+                        "--toc-depth=2",    
+                    ]
+                )
+                print(f"[{datetime.now()}] Converted → {docx_file}")
+
+                pythoncom.CoInitialize()
+                try:
+                    convert(docx_file, pdf_file)
+                finally:
+                    pythoncom.CoUninitialize()                              
+                print(f"[{datetime.now()}] Converted → {pdf_file}")
+
+                uploaded_filename = pdf_file
+            else:
+                return redirect(request.referrer)
+        else:
+            flash('Please select a source.', 'warning')
+            return redirect(request.referrer)
+
+        return render_template('notes.html', uploaded_filename=uploaded_filename)
+            
 
 @app.route('/logout')
 @login_required_user

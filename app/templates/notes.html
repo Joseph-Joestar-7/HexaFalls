@@ -144,6 +144,62 @@
         .dark .note-card-green {
             background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(22, 163, 74, 0.1) 100%);
         }
+
+        /* Loader Animation */
+        .loader {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #6366f1;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .pdf-viewer {
+            width: 100%;
+            height: 600px;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Radio button styling */
+        .radio-button {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #d1d5db;
+            border-radius: 50%;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .radio-button:checked {
+            border-color: #6366f1;
+            background-color: #6366f1;
+        }
+
+        .radio-button:checked::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
     </style>
 </head>
 
@@ -277,10 +333,9 @@
                 </div>
 
                 <!-- Upload Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <!-- Upload PDFs -->
-                    <form method="POST" action="{{ url_for('upload_pdf') }}" enctype="multipart/form-data"
-                        class="gradient-border rounded-2xl p-6 bg-green-50 dark:bg-green-900/20 hover-lift">
+                    <div class="gradient-border rounded-2xl p-6 bg-green-50 dark:bg-green-900/20 hover-lift">
                         <div class="text-center">
                             <div
                                 class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -289,220 +344,358 @@
                             <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Upload PDFs</h3>
                             <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Upload textbooks and study
                                 materials</p>
-                            <input id="pdfCardInput" name="pdf_file" type="file" accept="application/pdf" class="mb-2"
-                                required />
-                            <button type="submit"
-                                class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg font-medium transition-colors">
-                                Upload PDF
-                            </button>
-                            {% if uploaded_filename %}
-                            <div class="mt-2 text-sm text-gray-700 dark:text-gray-300">Uploaded: {{ uploaded_filename }}
-                            </div>
-                            {% endif %}
                         </div>
-                    </form>
+                    </div>
 
                     <!-- YouTube Links -->
-                    <form method="POST" action="{{ url_for('generate_notes') }}"
-                        class="rounded-2xl p-6 bg-blue-50 dark:bg-blue-900/20 hover-lift">
-                        <input type="hidden" name="card_type" value="descriptive" />
-                        <label class="block mb-2 font-medium">YouTube Link for Descriptive Notes</label>
-                        <input name="youtube_url" type="url" placeholder="https://youtu.be/VIDEO_ID" required
-                            class="mb-4 w-full" />
-                        <!-- tone, language, audio same fields -->
-                        <select name="tone" class="w-full mb-2">…</select>
-                        <select name="language" class="w-full mb-2">…</select>
-                        <label><input name="audio" type="checkbox" /> Audio?</label>
-                        <button type="submit" class="mt-4 w-full bg-blue-600 text-white py-2">Generate</button>
-                    </form>
-
-                    <!-- Lectures -->
-                    <div class="gradient-border rounded-2xl p-6 bg-purple-50 dark:bg-purple-900/20 hover-lift">
+                    <div class="gradient-border rounded-2xl p-6 bg-blue-50 dark:bg-blue-900/20 hover-lift">
                         <div class="text-center">
                             <div
-                                class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <i class="fas fa-book-open text-white text-lg"></i>
+                                class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-link text-white text-lg"></i>
                             </div>
-                            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Lectures</h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Upload downloaded lecture files</p>
-                            <input id="lectureCardInput" type="file" accept="video/*,application/pdf" class="hidden" />
-                            <button id="lectureCardBtn"
-                                class="w-full bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 rounded-lg font-medium transition-colors">
-                                Upload Files
-                            </button>
-                            <div id="lectureCardSelected" class="mt-2 text-sm text-gray-700 dark:text-gray-300"></div>
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">YouTube Links</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Add educational video links</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- File Upload Zone -->
-                <div class="upload-zone rounded-2xl p-8 mb-8 text-center">
-                    <div
-                        class="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-cloud-upload-alt text-blue-500 text-2xl"></i>
-                    </div>
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Drop your PDF here</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-4">or click to browse files</p>
-                    <!-- Hidden file input -->
-                    <input id="pdfInput" type="file" accept="application/pdf" class="hidden" />
-                    <button id="chooseFileBtn"
-                        class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium transition-colors">
-                        Choose File
-                    </button>
-                    <div id="selectedFile" class="mt-3 text-sm text-gray-700 dark:text-gray-300"></div>
-                </div>
 
                 <!-- Note Types -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <!-- Descriptive Notes -->
-                    <form method="POST" action="{{ url_for('generate_notes') }}" enctype="multipart/form-data"
-                        class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift note-card-purple">
+                    <form method="POST" action="{{ url_for('generate_notes') }}" enctype="multipart/form-data">
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift note-card-purple">
+                            <input type="hidden" name="card_type" value="descriptive" />
+                            <div class="mb-6">
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Descriptive Notes</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Detailed explanations with diagrams
+                                </p>
+                            </div>
 
-                        <!-- 1) Identify this card -->
-                        <input type="hidden" name="card_type" value="descriptive" />
+                            <!-- Source Selection -->
+                            <div class="mb-4">
+                                <div class="flex space-x-6">
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="radio" name="descriptive-source" value="pdf" class="radio-button"
+                                            checked onclick="toggleUploadType('descriptive', 'pdf')">
+                                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Upload PDF</span>
+                                    </label>
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="radio" name="descriptive-source" value="youtube"
+                                            class="radio-button" onclick="toggleUploadType('descriptive', 'youtube')">
+                                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">YouTube Link</span>
+                                    </label>
+                                </div>
+                            </div>
 
-                        <!-- 2) File input -->
-                        <label for="pdf_file" class="block mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Upload your PDF:
-                        </label>
-                        <input id="pdf_file" name="pdf_file" type="file" accept="application/pdf" required
-                            class="mb-4 w-full text-sm text-gray-900 dark:text-gray-100" />
+                            <!-- Upload Section -->
+                            <div class="mb-4">
+                                <div id="descriptive-pdf-upload" class="upload-section">
+                                    <input type="file" id="descriptive-file" name="pdf_file" accept=".pdf"
+                                        class="hidden" onchange="handleFileUpload('descriptive')">
+                                    <button type="button" onclick="document.getElementById('descriptive-file').click()"
+                                        class="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
+                                        Upload PDF
+                                    </button>
+                                    <div id="descriptive-filename"
+                                        class="mt-2 text-sm text-gray-600 dark:text-gray-400 hidden"></div>
+                                </div>
+                                <div id="descriptive-youtube-upload" class="upload-section hidden">
+                                    <input type="url" id="descriptive-youtube-url" name="youtube_url"
+                                        placeholder="https://youtube.com/watch?v=..."
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white mb-3">
+                                    <button type="button" onclick="handleYoutubeLink('descriptive')"
+                                        class="w-full bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
+                                        Process Link
+                                    </button>
+                                    <div id="descriptive-youtube-link"
+                                        class="mt-2 text-sm text-gray-600 dark:text-gray-400 hidden"></div>
+                                </div>
+                            </div>
 
-                        <!-- 3) Tone select -->
-                        <div class="mb-3">
-                            <label class="block text-sm mb-1">Note Tone</label>
-                            <select name="tone" class="w-full px-3 py-2 border rounded-lg">
-                                <option value="professional">Professional</option>
-                                <option value="casual">Casual</option>
-                                <option value="academic">Academic</option>
-                            </select>
+                            <!-- Note Options -->
+                            <div class="space-y-3 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Note
+                                        Tone</label>
+                                    <select name="tone"
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                        <option>Professional</option>
+                                        <option>Casual</option>
+                                        <option>Academic</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Language</label>
+                                    <select name="language"
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                        <option>English</option>
+                                        <option>Bengali</option>
+                                        <option>Hindi</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="audio-descriptive" name="audio" class="mr-2 rounded">
+                                    <label for="audio-descriptive"
+                                        class="text-sm text-gray-700 dark:text-gray-300">Enable
+                                        Audio Format</label>
+                                </div>
+                            </div>
+
+                            <button type="submit"
+                                class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg font-medium transition-colors">
+                                Generate Now
+                            </button>
+
+                            {% if uploaded_filename and request.form.get('card_type') == 'descriptive' %}
+                            <div class="mt-2 text-green-600">Uploaded: {{ uploaded_filename }}</div>
+                            {% endif %}
+
+                            <!-- Loading State -->
+                            <div id="descriptive-loading" class="hidden mt-4 text-center">
+                                <div class="loader mx-auto mb-3"></div>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Generating your notes...</p>
+                            </div>
+
+                            <!-- Generated Notes Display -->
+                            <div id="descriptive-result" class="hidden mt-4">
+                                <div class="border-t border-gray-200 dark:border-gray-600 pt-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h4 class="font-semibold text-gray-900 dark:text-white">Generated Notes</h4>
+                                        <button onclick="downloadNotes('descriptive')"
+                                            class="text-blue-600 hover:text-blue-700 text-sm">
+                                            <i class="fas fa-download mr-1"></i>Download
+                                        </button>
+                                    </div>
+                                    <iframe id="descriptive-pdf-viewer" class="pdf-viewer"></iframe>
+                                </div>
+                            </div>
                         </div>
+                    </form>
 
-                        <!-- 4) Language select -->
-                        <div class="mb-3">
-                            <label class="block text-sm mb-1">Language</label>
-                            <select name="language" class="w-full px-3 py-2 border rounded-lg">
-                                <option value="english">English</option>
-                                <option value="bengali">Bengali</option>
-                                <option value="hindi">Hindi</option>
-                            </select>
+                    <form method="POST" action="{{ url_for('generate_notes') }}" enctype="multipart/form-data">
+                        <!-- Short Notes -->
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift note-card-blue">
+                            <input type="hidden" name="card_type" value="short" />
+                            <div class="mb-6">
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Short Notes</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Quick bullet points</p>
+                            </div>
+
+                            <!-- Source Selection -->
+                            <div class="mb-4">
+                                <div class="flex space-x-6">
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="radio" name="short-source" value="pdf" class="radio-button" checked
+                                            onclick="toggleUploadType('short', 'pdf')">
+                                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Upload PDF</span>
+                                    </label>
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="radio" name="short-source" value="youtube" class="radio-button"
+                                            onclick="toggleUploadType('short', 'youtube')">
+                                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">YouTube Link</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Upload Section -->
+                            <div class="mb-4">
+                                <div id="short-pdf-upload" class="upload-section">
+                                    <input type="file" id="short-file" name="pdf_file" accept=".pdf" class="hidden"
+                                        onchange="handleFileUpload('short')">
+                                    <button type="button" onclick="document.getElementById('short-file').click()"
+                                        class="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
+                                        Upload PDF
+                                    </button>
+                                    <div id="short-filename"
+                                        class="mt-2 text-sm text-gray-600 dark:text-gray-400 hidden"></div>
+                                </div>
+                                <div id="short-youtube-upload" class="upload-section hidden">
+                                    <input type="url" id="short-youtube-url" name="youtube_url"
+                                        placeholder="https://youtube.com/watch?v=..."
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white mb-3">
+                                    <button type="button" onclick="handleYoutubeLink('short')"
+                                        class="w-full bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
+                                        Process Link
+                                    </button>
+                                    <div id="short-youtube-link"
+                                        class="mt-2 text-sm text-gray-600 dark:text-gray-400 hidden"></div>
+                                </div>
+                            </div>
+
+                            <!-- Note Options -->
+                            <div class="space-y-3 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Note
+                                        Tone</label>
+                                    <select name="tone"
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                        <option>Professional</option>
+                                        <option>Casual</option>
+                                        <option>Academic</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Language</label>
+                                    <select name="language"
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                        <option>English</option>
+                                        <option>Bengali</option>
+                                        <option>Hindi</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="audio-short" name="audio" class="mr-2 rounded">
+                                    <label for="audio-short" class="text-sm text-gray-700 dark:text-gray-300">Enable
+                                        Audio Format</label>
+                                </div>
+                            </div>
+
+                            <button type="submit"
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors">
+                                Generate Now
+                            </button>
+
+                            {% if uploaded_filename and request.form.get('card_type') == 'short' %}
+                            <div class="mt-2 text-green-600">Uploaded: {{ uploaded_filename }}</div>
+                            {% endif %}
+
+                            <!-- Loading State -->
+                            <div id="short-loading" class="hidden mt-4 text-center">
+                                <div class="loader mx-auto mb-3"></div>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Generating your notes...</p>
+                            </div>
+
+                            <!-- Generated Notes Display -->
+                            <div id="short-result" class="hidden mt-4">
+                                <div class="border-t border-gray-200 dark:border-gray-600 pt-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h4 class="font-semibold text-gray-900 dark:text-white">Generated Notes</h4>
+                                        <button onclick="downloadNotes('short')"
+                                            class="text-blue-600 hover:text-blue-700 text-sm">
+                                            <i class="fas fa-download mr-1"></i>Download
+                                        </button>
+                                    </div>
+                                    <iframe id="short-pdf-viewer" class="pdf-viewer"></iframe>
+                                </div>
+                            </div>
                         </div>
-
-                        <!-- 5) Audio checkbox -->
-                        <div class="flex items-center mb-4">
-                            <input name="audio" id="audio-descriptive" type="checkbox" class="mr-2" />
-                            <label for="audio-descriptive" class="text-sm">Enable Audio Format</label>
-                        </div>
-
-                        <!-- 6) Submit button -->
-                        <button type="submit"
-                            class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg">
-                            Generate Now
-                        </button>
                     </form>
 
 
-                    <!-- Short Notes -->
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift note-card-blue">
-                        <div class="flex items-center mb-4">
-                            <div
-                                class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mr-3">
-                                <i class="fas fa-sticky-note text-blue-600 dark:text-blue-400"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-gray-900 dark:text-white">Short Notes</h3>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Quick bullet points</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between mb-4">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">Generated</span>
-                            <span
-                                class="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 px-2 py-1 rounded-full text-xs font-medium">523</span>
-                        </div>
-
-                        <!-- Note Options -->
-                        <div class="space-y-3 mb-4">
-                            <div>
-                                <label class="block text-sm text-gray-700 dark:text-gray-300 mb-2">Note Tone</label>
-                                <select
-                                    class="w-full text-sm px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                                    <option>Professional</option>
-                                    <option>Casual</option>
-                                    <option>Academic</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm text-gray-700 dark:text-gray-300 mb-2">Language</label>
-                                <select
-                                    class="w-full text-sm px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                                    <option>English</option>
-                                    <option>Bengali</option>
-                                    <option>Hindi</option>
-                                </select>
-                            </div>
-                            <div class="flex items-center">
-                                <input type="checkbox" id="audio-short" class="mr-2 rounded">
-                                <label for="audio-short" class="text-sm text-gray-700 dark:text-gray-300">Enable Audio
-                                    Format</label>
-                            </div>
-                        </div>
-
-                        <button
-                            class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition-colors">
-                            Generate Now
-                        </button>
-                    </div>
-
                     <!-- Formula Notes -->
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift note-card-green">
-                        <div class="flex items-center mb-4">
-                            <div
-                                class="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mr-3">
-                                <i class="fas fa-calculator text-green-600 dark:text-green-400"></i>
+                    <form method="POST" action="{{ url_for('generate_notes') }}" enctype="multipart/form-data">
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift note-card-green">
+                            <input type="hidden" name="card_type" value="formula" />
+                            <div class="mb-6">
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Formula Notes</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Mathematical & Chemical Formulas</p>
                             </div>
-                            <div>
-                                <h3 class="font-bold text-gray-900 dark:text-white">Formula Notes</h3>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Mathematical & chemical formulas</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between mb-4">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">Generated</span>
-                            <span
-                                class="bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 px-2 py-1 rounded-full text-xs font-medium">234</span>
-                        </div>
 
-                        <!-- Note Options -->
-                        <div class="space-y-3 mb-4">
-                            <div>
-                                <label class="block text-sm text-gray-700 dark:text-gray-300 mb-2">Note Tone</label>
-                                <select
-                                    class="w-full text-sm px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                                    <option>Professional</option>
-                                    <option>Casual</option>
-                                    <option>Academic</option>
-                                </select>
+                            <!-- Source Selection -->
+                            <div class="mb-4">
+                                <div class="flex space-x-6">
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="radio" name="formula-source" value="pdf" class="radio-button"
+                                            checked onclick="toggleUploadType('formula', 'pdf')">
+                                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Upload PDF</span>
+                                    </label>
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="radio" name="formula-source" value="youtube" class="radio-button"
+                                            onclick="toggleUploadType('formula', 'youtube')">
+                                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">YouTube Link</span>
+                                    </label>
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-sm text-gray-700 dark:text-gray-300 mb-2">Language</label>
-                                <select
-                                    class="w-full text-sm px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                                    <option>English</option>
-                                    <option>Bengali</option>
-                                    <option>Hindi</option>
-                                </select>
+
+                            <!-- Upload Section -->
+                            <div class="mb-4">
+                                <div id="formula-pdf-upload" class="upload-section">
+                                    <input type="file" id="formula-file" name="pdf_file" accept=".pdf" class="hidden"
+                                        onchange="handleFileUpload('formula')">
+                                    <button type="button" onclick="document.getElementById('formula-file').click()"
+                                        class="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
+                                        Upload PDF
+                                    </button>
+                                    <div id="formula-filename"
+                                        class="mt-2 text-sm text-gray-600 dark:text-gray-400 hidden">
+                                    </div>
+                                </div>
+                                <div id="formula-youtube-upload" class="upload-section hidden">
+                                    <input type="url" id="formula-youtube-url" name="youtube_url"
+                                        placeholder="https://youtube.com/watch?v=..."
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white mb-3">
+                                    <button type="button" onclick="handleYoutubeLink('formula')"
+                                        class="w-full bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
+                                        Process Link
+                                    </button>
+                                    <div id="formula-youtube-link"
+                                        class="mt-2 text-sm text-gray-600 dark:text-gray-400 hidden"></div>
+                                </div>
                             </div>
-                            <div class="flex items-center">
-                                <input type="checkbox" id="audio-formula" class="mr-2 rounded">
-                                <label for="audio-formula" class="text-sm text-gray-700 dark:text-gray-300">Enable Audio
-                                    Format</label>
+
+                            <!-- Note Options -->
+                            <div class="space-y-3 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Note
+                                        Tone</label>
+                                    <select name="tone"
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                        <option>Professional</option>
+                                        <option>Casual</option>
+                                        <option>Academic</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Language</label>
+                                    <select name="language"
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                        <option>English</option>
+                                        <option>Bengali</option>
+                                        <option>Hindi</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="audio-formula" name="audio" class="mr-2 rounded">
+                                    <label for="audio-formula" class="text-sm text-gray-700 dark:text-gray-300">Enable
+                                        Audio Format</label>
+                                </div>
+                            </div>
+
+                            <button type="submit"
+                                class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium transition-colors">
+                                Generate Now
+                            </button>
+
+                            {% if uploaded_filename and request.form.get('card_type') == 'formula' %}
+                            <div class="mt-2 text-green-600">Uploaded: {{ uploaded_filename }}</div>
+                            {% endif %}
+
+                            <!-- Loading State -->
+                            <div id="formula-loading" class="hidden mt-4 text-center">
+                                <div class="loader mx-auto mb-3"></div>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Generating your notes...</p>
+                            </div>
+
+                            <!-- Generated Notes Display -->
+                            <div id="formula-result" class="hidden mt-4">
+                                <div class="border-t border-gray-200 dark:border-gray-600 pt-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h4 class="font-semibold text-gray-900 dark:text-white">Generated Notes</h4>
+                                        <button onclick="downloadNotes('formula')"
+                                            class="text-blue-600 hover:text-blue-700 text-sm">
+                                            <i class="fas fa-download mr-1"></i>Download
+                                        </button>
+                                    </div>
+                                    <iframe id="formula-pdf-viewer" class="pdf-viewer"></iframe>
+                                </div>
                             </div>
                         </div>
-
-                        <button
-                            class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-medium transition-colors">
-                            Generate Now
-                        </button>
-                    </div>
+                    </form>
                 </div>
 
                 <!-- Recent Content -->
@@ -518,7 +711,8 @@
                             <div
                                 class="p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover-lift cursor-pointer">
                                 <div class="flex items-start justify-between mb-2">
-                                    <h4 class="font-semibold text-gray-900 dark:text-white">Calculus - Derivatives</h4>
+                                    <h4 class="font-semibold text-gray-900 dark:text-white">Calculus - Derivatives
+                                    </h4>
                                     <div class="flex space-x-2">
                                         <button class="text-gray-400 hover:text-gray-600"><i
                                                 class="fas fa-eye"></i></button>
@@ -528,7 +722,8 @@
                                                 class="fas fa-share"></i></button>
                                     </div>
                                 </div>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Descriptive Notes • Mathematics • 12
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Descriptive Notes • Mathematics
+                                    • 12
                                     pages</p>
                                 <p class="text-xs text-gray-500 dark:text-gray-500 mt-2">Modified Today</p>
                             </div>
@@ -536,7 +731,8 @@
                             <div
                                 class="p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover-lift cursor-pointer">
                                 <div class="flex items-start justify-between mb-2">
-                                    <h4 class="font-semibold text-gray-900 dark:text-white">Quantum Physics Summary</h4>
+                                    <h4 class="font-semibold text-gray-900 dark:text-white">Quantum Physics Summary
+                                    </h4>
                                     <div class="flex space-x-2">
                                         <button class="text-gray-400 hover:text-gray-600"><i
                                                 class="fas fa-eye"></i></button>
@@ -546,7 +742,8 @@
                                                 class="fas fa-share"></i></button>
                                     </div>
                                 </div>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Short Notes • Physics • 6 pages</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Short Notes • Physics • 6 pages
+                                </p>
                                 <p class="text-xs text-gray-500 dark:text-gray-500 mt-2">Modified Yesterday</p>
                             </div>
 
@@ -563,7 +760,8 @@
                                                 class="fas fa-share"></i></button>
                                     </div>
                                 </div>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Formula Notes • Chemistry • 8 pages
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Formula Notes • Chemistry • 8
+                                    pages
                                 </p>
                                 <p class="text-xs text-gray-500 dark:text-gray-500 mt-2">Modified 2 days ago</p>
                             </div>
@@ -573,7 +771,8 @@
                     <!-- Recent Uploads -->
                     <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
                         <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Recent Uploads</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">Track your uploaded content processing
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">Track your uploaded content
+                            processing
                             status</p>
                         <div class="space-y-4">
                             <div
@@ -584,7 +783,8 @@
                                         <i class="fas fa-file-pdf text-red-600 dark:text-red-400 text-sm"></i>
                                     </div>
                                     <div>
-                                        <p class="font-medium text-gray-900 dark:text-white">Calculus_Chapter_5.pdf</p>
+                                        <p class="font-medium text-gray-900 dark:text-white">Calculus_Chapter_5.pdf
+                                        </p>
                                         <p class="text-xs text-gray-600 dark:text-gray-400">2 hours ago</p>
                                     </div>
                                 </div>
@@ -600,7 +800,8 @@
                                         <i class="fas fa-video text-blue-600 dark:text-blue-400 text-sm"></i>
                                     </div>
                                     <div>
-                                        <p class="font-medium text-gray-900 dark:text-white">Physics_Mechanics_Video.mp4
+                                        <p class="font-medium text-gray-900 dark:text-white">
+                                            Physics_Mechanics_Video.mp4
                                         </p>
                                         <p class="text-xs text-gray-600 dark:text-gray-400">5 hours ago</p>
                                     </div>
@@ -714,7 +915,77 @@
             const file = e.target.files[0];
             document.getElementById('lectureCardSelected').textContent = file ? `Selected: ${file.name}` : '';
         };
+
+        // Toggle upload type (PDF vs YouTube)
+        function toggleUploadType(cardType, sourceType) {
+            const pdfUpload = document.getElementById(`${cardType}-pdf-upload`);
+            const youtubeUpload = document.getElementById(`${cardType}-youtube-upload`);
+
+            if (sourceType === 'pdf') {
+                pdfUpload.classList.remove('hidden');
+                youtubeUpload.classList.add('hidden');
+            } else {
+                pdfUpload.classList.add('hidden');
+                youtubeUpload.classList.remove('hidden');
+            }
+        }
+
+        // Handle file upload
+        function handleFileUpload(cardType) {
+            const fileInput = document.getElementById(`${cardType}-file`);
+            const filenameDisplay = document.getElementById(`${cardType}-filename`);
+
+            if (fileInput.files.length > 0) {
+                const fileName = fileInput.files[0].name;
+                filenameDisplay.textContent = `Selected: ${fileName}`;
+                filenameDisplay.classList.remove('hidden');
+            }
+        }
+
+        function handleYoutubeLink(cardType) {
+            const urlInput = document.getElementById(`${cardType}-youtube-url`);
+            const linkDisplay = document.getElementById(`${cardType}-youtube-link`);
+            const url = urlInput.value.trim();
+            if (url) {
+                linkDisplay.textContent = `Link: ${url}`;
+                linkDisplay.classList.remove('hidden');
+            } else {
+                linkDisplay.textContent = '';
+                linkDisplay.classList.add('hidden');
+            }
+        }
+
+        // Generate notes with loading state
+        function generateNotes(cardType) {
+            const loadingElement = document.getElementById(`${cardType} - loading`);
+            const resultElement = document.getElementById(`${cardType} - result`);
+            const pdfViewer = document.getElementById(`${cardType} - pdf - viewer`);
+
+            // Show loading state
+            loadingElement.classList.remove('hidden');
+            resultElement.classList.add('hidden');
+
+            // Simulate note generation (replace with actual Flask API call)
+            setTimeout(() => {
+                // Hide loading state
+                loadingElement.classList.add('hidden');
+
+                // Show generated notes (simulate with a sample PDF)
+                // In your Flask app, you would set the src to the actual generated PDF URL
+                pdfViewer.src = "data:application/pdf;base64,JVBERi0xLjcKCjEgMCBvYmoKPDwKL1R5cGUgL0NhdGFsb2cKL091dGxpbmVzIDIgMCBSCi9QYWdlcyAzIDAgUgo+PgplbmRvYmoKCjIgMCBvYmoKPDwKL1R5cGUgL091dGxpbmVzCi9Db3VudCAwCj4+CmVuZG9iagoKMyAwIG9iago8PAovVHlwZSAvUGFnZXMKL0NvdW50IDEKL0tpZHMgWzQgMCBSXQo+PgplbmRvYmoKCjQgMCBvYmoKPDwKL1R5cGUgL1BhZ2UKL1BhcmVudCAzIDAgUgovUmVzb3VyY2VzIDw8Ci9Gb250IDw8Ci9GMSA5IDAgUgo+Pgo+PgovTWVkaWFCb3ggWzAgMCA2MTIgNzkyXQovQ29udGVudHMgNSAwIFIKPj4KZW5kb2JqCgo1IDAgb2JqCjw8Ci9MZW5ndGggNDQKPj4Kc3RyZWFtCkJUCi9GMSAxMiBUZgoyIDc2IFRkCihHZW5lcmF0ZWQgTm90ZXMpIFRqCkVUCmVuZHN0cmVhbQplbmRvYmoKCjYgMCBvYmoKPDwKL1R5cGUgL0ZvbnREZXNjcmlwdG9yCi9Gb250TmFtZSAvVGltZXMtUm9tYW4KL0ZsYWdzIDMyCi9Gb250QkJveCBbLTU2OCAtMzA2IDIwNDYgMTA0NF0KL0l0YWxpY0FuZ2xlIDAKL0FzY2VudCA4OTEKL0Rlc2NlbnQgLTIxNgovQ2FwSGVpZ2h0IDY2MgovU3RlbVYgMTExCj4+CmVuZG9iagoKNyAwIG9iago8PAovVHlwZSAvRm9udAovU3VidHlwZSAvVHlwZTEKL0Jhc2VGb250IC9UaW1lcy1Sb21hbgovRm9udERlc2NyaXB0b3IgNiAwIFIKPj4KZW5kb2JqCgo4IDAgb2JqCjw8Ci9UeXBlIC9YUmVmCi9TaXplIDkKL1Jvb3QgMSAwIFIKPj4KZW5kb2JqCgp4cmVmCjAgOQowMDAwMDAwMDAwIDY1NTM1IGYKMDAwMDAwMDAwOSAwMDAwMCBuCjAwMDAwMDAwNzQgMDAwMDAgbgowMDAwMDAwMTIwIDAwMDAwIG4KMDAwMDAwMDE3NyAwMDAwMCBuCjAwMDAwMDAzNjQgMDAwMDAgbgowMDAwMDAwNDU2IDAwMDAwIG4KMDAwMDAwMDY4NSAwMDAwMCBuCjAwMDAwMDA3ODMgMDAwMDAgbgp0cmFpbGVyCjw8Ci9TaXplIDkKL1Jvb3QgMSAwIFIKPj4Kc3RhcnR4cmVmCjg0MQolJUVPRg==";
+
+                // Show result
+                resultElement.classList.remove('hidden');
+            }, 3000); // 3 second delay to simulate processing
+        }
+
+        // Download notes
+        function downloadNotes(cardType) {
+            // In your Flask app, this would trigger the actual download
+            alert(`Downloading ${cardType} notes...`);
+        }
     </script>
+
 </body>
 
 </html>

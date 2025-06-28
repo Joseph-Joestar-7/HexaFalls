@@ -115,30 +115,30 @@ def filter_domain(text, vocab):
 # ----------------------
 # USAGE EXAMPLE
 # ----------------------
-if __name__ == '__main__':
-    pdf = 'selina-class-10-physics-chapter-3-machines.pdf'
-    pages = render_pdf_to_images(pdf, zoom=3.0)
-    sym = load_symspell()
-    vocab = load_domain_vocab()
+# if __name__ == '__main__':
+#     pdf = 'selina-class-10-physics-chapter-3-machines.pdf'
+#     pages = render_pdf_to_images(pdf, zoom=3.0)
+#     sym = load_symspell()
+#     vocab = load_domain_vocab()
 
-    all_texts = []
-    for i, pg in enumerate(pages, 1):
-        # minimal preprocessing
-        proc = preprocess_image(pg, method='minimal', deskew=False)
+#     all_texts = []
+#     for i, pg in enumerate(pages, 1):
+#         # minimal preprocessing
+#         proc = preprocess_image(pg, method='minimal', deskew=False)
 
-        # OCR and corrections
-        raw = ocr_image(proc, psm=3)
-        corrected = correct_spelling_symspell(raw, sym)
-        filtered = filter_domain(corrected, vocab)
+#         # OCR and corrections
+#         raw = ocr_image(proc, psm=3)
+#         corrected = correct_spelling_symspell(raw, sym)
+#         filtered = filter_domain(corrected, vocab)
 
-        # Append with page breaks
-        all_texts.append(f" --- Page {i} ---")
-        all_texts.append(filtered)
+#         # Append with page breaks
+#         all_texts.append(f" --- Page {i} ---")
+#         all_texts.append(filtered)
 
-        print(f"Processed page {i}, chars: {len(filtered)}")
+#         print(f"Processed page {i}, chars: {len(filtered)}")
 
-    # Write all pages into one combined file
-    with open('chapter03.txt', 'w', encoding='utf-8') as out:
-        out.write(''.join(all_texts))
+#     # Write all pages into one combined file
+#     with open('chapter03.txt', 'w', encoding='utf-8') as out:
+#         out.write(''.join(all_texts))
 
-    print("All pages saved to combined_output.txt")
+#     print("All pages saved to combined_output.txt")
