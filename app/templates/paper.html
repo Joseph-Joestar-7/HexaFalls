@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Papers - EduTrack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        background: 'var(--background)',
+                        foreground: 'var(--foreground)',
+                        card: 'var(--card)',
+                        'card-foreground': 'var(--card-foreground)',
+                        muted: 'var(--muted)',
+                        'muted-foreground': 'var(--muted-foreground)',
+                        accent: 'var(--accent)',
+                        'accent-foreground': 'var(--accent-foreground)',
+                        border: 'var(--border)',
+                    },
+                    animation: {
+                        'fade-up': 'fadeUp 0.7s ease-out',
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'scale-in': 'scaleIn 0.3s ease-out',
+                        'slide-left': 'slideLeft 0.5s ease-out',
+                        'slide-right': 'slideRight 0.5s ease-out',
+                        'bounce': 'bounce 2s infinite',
+                        'pulse': 'pulse 2s infinite',
+                    },
+                    keyframes: {
+                        fadeUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        scaleIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' }
+                        },
+                        slideLeft: {
+                            '0%': { opacity: '0', transform: 'translateX(-30px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' }
+                        },
+                        slideRight: {
+                            '0%': { opacity: '0', transform: 'translateX(30px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .sidebar-collapsed {
+            width: 60px;
+        }
+
+        .sidebar-expanded {
+            width: 256px;
+        }
+
+        .transition-width {
+            transition: width 0.3s ease;
+        }
+
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .subject-card {
+            transition: all 0.3s ease;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal {
+            transition: opacity 0.3s ease;
+        }
+
+        .paper-content {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .paper-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .paper-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .paper-content::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="bg-white dark:bg-gray-800 shadow-lg flex flex-col transition-width sidebar-expanded">
+            <!-- Logo -->
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                <div id="logo-full" class="flex items-center">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-white text-sm"></i>
+                    </div>
+                    <span class="ml-3 text-lg font-bold text-gray-900 dark:text-white sidebar-text">EduTrack</span>
+                </div>
+                <div id="logo-mini" class="hidden justify-center w-full">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-white text-sm"></i>
+                    </div>
+                </div>
+                <button onclick="toggleSidebar()" class="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <i id="sidebar-toggle-icon" class="fas fa-chevron-left text-gray-600 dark:text-gray-400"></i>
+                </button>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 px-2 py-4 space-y-1">
+                <a href="dashboard.html"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-home w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Dashboard</span>
+                </a>
+                <a href="notes.html"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-sticky-note w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">My Notes</span>
+                </a>
+                <a href="quiz.html"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-question-circle w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Quizzes & Tests</span>
+                </a>
+                <a href="#"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-chart-line w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Progress</span>
+                </a>
+                <a href="chatbot.html"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-robot w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">AI Assistant</span>
+                </a>
+                <a href="#"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-calendar w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Study Schedule</span>
+                </a>
+                <a href="paper.html" class="flex items-center px-3 py-2 text-white bg-purple-600 rounded-lg">
+                    <i class="fas fa-file-alt w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Question Papers</span>
+                </a>
+                <a href="#"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-cog w-5 h-5"></i>
+                    <span class="ml-3 sidebar-text">Settings</span>
+                </a>
+            </nav>
+
+            <!-- Upgrade to Pro -->
+            <div class="p-4">
+                <div class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-3 text-center sidebar-upgrade">
+                    <p class="text-white text-sm font-medium sidebar-text">Upgrade to Pro</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+                            Samriddho's Question Papers <i class="fas fa-file-alt ml-2 text-purple-500"></i>
+                        </h1>
+                        <p class="text-gray-600 dark:text-gray-400 mt-1">Test your knowledge with AI-generated questions
+                        </p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="toggleTheme()"
+                            class="p-2.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200">
+                            <i id="theme-icon" class="fas fa-moon"></i>
+                        </button>
+
+                        <button
+                            class="relative p-2.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200">
+                            <i class="fas fa-bell"></i>
+                            <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+                        </button>
+
+                        <div class="flex items-center space-x-3 pl-3 border-l border-gray-200 dark:border-gray-700">
+                            <div class="text-right">
+                                <p class="text-sm font-semibold dark:text-white">Samriddho</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Premium Student</p>
+                            </div>
+                            <div
+                                class="w-9 h-9 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                                <i class="fas fa-user text-white text-sm"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <main class="flex-1 overflow-y-auto p-6">
+                <!-- Subject Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <!-- Mathematics -->
+                    <div class="subject-card bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl p-6 text-white cursor-pointer"
+                        onclick="openModal('Mathematics')">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                                <i class="fas fa-calculator text-2xl"></i>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-sm opacity-80">Available</span>
+                                <p class="text-xl font-bold">850+</p>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Mathematics</h3>
+                        <p class="text-sm opacity-80 mb-4">Algebra, Calculus, Geometry & more</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm">Generate Paper</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+
+                    <!-- Physics -->
+                    <div class="subject-card bg-gradient-to-br from-green-500 to-teal-600 rounded-3xl p-6 text-white cursor-pointer"
+                        onclick="openModal('Physics')">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                                <i class="fas fa-atom text-2xl"></i>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-sm opacity-80">Available</span>
+                                <p class="text-xl font-bold">720+</p>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Physics</h3>
+                        <p class="text-sm opacity-80 mb-4">Mechanics, Thermodynamics & more</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm">Generate Paper</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+
+                    <!-- Chemistry -->
+                    <div class="subject-card bg-gradient-to-br from-orange-500 to-red-600 rounded-3xl p-6 text-white cursor-pointer"
+                        onclick="openModal('Chemistry')">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                                <i class="fas fa-flask text-2xl"></i>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-sm opacity-80">Available</span>
+                                <p class="text-xl font-bold">650+</p>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Chemistry</h3>
+                        <p class="text-sm opacity-80 mb-4">Organic, Inorganic & Physical</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm">Generate Paper</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+
+                    <!-- Biology -->
+                    <div class="subject-card bg-gradient-to-br from-pink-500 to-purple-600 rounded-3xl p-6 text-white cursor-pointer"
+                        onclick="openModal('Biology')">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                                <i class="fas fa-dna text-2xl"></i>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-sm opacity-80">Available</span>
+                                <p class="text-xl font-bold">580+</p>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Biology</h3>
+                        <p class="text-sm opacity-80 mb-4">Botany, Zoology & Genetics</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm">Generate Paper</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+
+                    <!-- Computer Science -->
+                    <div class="subject-card bg-gradient-to-br from-indigo-500 to-blue-600 rounded-3xl p-6 text-white cursor-pointer"
+                        onclick="openModal('Computer Science')">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                                <i class="fas fa-code text-2xl"></i>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-sm opacity-80">Available</span>
+                                <p class="text-xl font-bold">420+</p>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Computer Science</h3>
+                        <p class="text-sm opacity-80 mb-4">Programming, Data Structures & more</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm">Generate Paper</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+
+                    <!-- English -->
+                    <div class="subject-card bg-gradient-to-br from-yellow-500 to-amber-600 rounded-3xl p-6 text-white cursor-pointer"
+                        onclick="openModal('English')">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                                <i class="fas fa-book text-2xl"></i>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-sm opacity-80">Available</span>
+                                <p class="text-xl font-bold">380+</p>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">English</h3>
+                        <p class="text-sm opacity-80 mb-4">Literature, Grammar & Composition</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm">Generate Paper</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generated Paper Section -->
+                <div id="paperSection" class="hidden bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 mb-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Generated Question Paper</h2>
+                        <button onclick="downloadPaper()"
+                            class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg transition-all">
+                            <i class="fas fa-download mr-2"></i>Download PDF
+                        </button>
+                    </div>
+
+                    <div class="paper-content bg-gray-50 dark:bg-gray-700 rounded-xl p-6">
+                        <div class="text-center mb-8 border-b border-gray-300 dark:border-gray-600 pb-6">
+                            <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">QUESTION PAPER</h1>
+                            <p class="text-lg text-gray-700 dark:text-gray-300" id="paperSubject">Mathematics</p>
+                            <p class="text-gray-600 dark:text-gray-400" id="paperDetails">Time: 3 Hours | Max Marks: 100
+                            </p>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="border-l-4 border-blue-500 pl-4">
+                                <h3 class="font-bold text-gray-900 dark:text-white mb-2">Section A - Multiple Choice
+                                    Questions (20 marks)</h3>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">Choose the correct answer from
+                                    the given options. Each question carries 1 mark.</p>
+
+                                <div class="space-y-3">
+                                    <div class="p-3 bg-white dark:bg-gray-800 rounded-lg">
+                                        <p class="font-medium text-gray-900 dark:text-white">1. What is the derivative
+                                            of x²?</p>
+                                        <div class="mt-2 space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                                            <p>a) x</p>
+                                            <p>b) 2x</p>
+                                            <p>c) x²</p>
+                                            <p>d) 2</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="p-3 bg-white dark:bg-gray-800 rounded-lg">
+                                        <p class="font-medium text-gray-900 dark:text-white">2. Which of the following
+                                            is a prime number?</p>
+                                        <div class="mt-2 space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                                            <p>a) 9</p>
+                                            <p>b) 15</p>
+                                            <p>c) 17</p>
+                                            <p>d) 21</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-l-4 border-green-500 pl-4">
+                                <h3 class="font-bold text-gray-900 dark:text-white mb-2">Section B - Short Answer
+                                    Questions (30 marks)</h3>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">Answer any 6 questions. Each
+                                    question carries 5 marks.</p>
+
+                                <div class="space-y-3">
+                                    <div class="p-3 bg-white dark:bg-gray-800 rounded-lg">
+                                        <p class="font-medium text-gray-900 dark:text-white">3. Find the integral of 3x²
+                                            + 2x + 1.</p>
+                                    </div>
+
+                                    <div class="p-3 bg-white dark:bg-gray-800 rounded-lg">
+                                        <p class="font-medium text-gray-900 dark:text-white">4. Solve the quadratic
+                                            equation x² - 5x + 6 = 0.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-l-4 border-purple-500 pl-4">
+                                <h3 class="font-bold text-gray-900 dark:text-white mb-2">Section C - Long Answer
+                                    Questions (50 marks)</h3>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">Answer any 5 questions. Each
+                                    question carries 10 marks.</p>
+
+                                <div class="space-y-3">
+                                    <div class="p-3 bg-white dark:bg-gray-800 rounded-lg">
+                                        <p class="font-medium text-gray-900 dark:text-white">5. Prove that the sum of
+                                            the interior angles of a triangle is 180°.</p>
+                                    </div>
+
+                                    <div class="p-3 bg-white dark:bg-gray-800 rounded-lg">
+                                        <p class="font-medium text-gray-900 dark:text-white">6. Find the area under the
+                                            curve y = x² from x = 0 to x = 2.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History Section -->
+                <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Previous Question Papers</h3>
+                        <button class="text-purple-600 hover:text-purple-700 font-medium text-sm">View All</button>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div
+                            class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover-lift">
+                            <div class="flex items-center">
+                                <div
+                                    class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-calculator text-blue-600 dark:text-blue-400"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900 dark:text-white">Mathematics - Calculus</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Generated on Dec 26, 2024 • 100
+                                        marks • 3 hours</p>
+                                </div>
+                            </div>
+                            <button class="text-gray-400 hover:text-purple-600 transition-colors">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+
+                        <div
+                            class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover-lift">
+                            <div class="flex items-center">
+                                <div
+                                    class="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-atom text-green-600 dark:text-green-400"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900 dark:text-white">Physics - Mechanics</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Generated on Dec 25, 2024 • 80
+                                        marks • 2.5 hours</p>
+                                </div>
+                            </div>
+                            <button class="text-gray-400 hover:text-purple-600 transition-colors">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+
+                        <div
+                            class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover-lift">
+                            <div class="flex items-center">
+                                <div
+                                    class="w-10 h-10 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mr-4">
+                                    <i class="fas fa-flask text-orange-600 dark:text-orange-400"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900 dark:text-white">Chemistry - Organic</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Generated on Dec 24, 2024 • 70
+                                        marks • 2 hours</p>
+                                </div>
+                            </div>
+                            <button class="text-gray-400 hover:text-purple-600 transition-colors">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Footer -->
+            <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4 px-6">
+                <div class="text-center">
+                    <p class="text-gray-600 dark:text-gray-400 text-sm">2025 © NeuralNexus</p>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 modal">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Generate Question Paper</h2>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <form id="paperForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Subject</label>
+                    <input type="text" id="modalSubject" readonly
+                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Total
+                            Marks</label>
+                        <select
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                            <option>50</option>
+                            <option>70</option>
+                            <option>80</option>
+                            <option selected>100</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Duration</label>
+                        <select
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                            <option>1.5 Hours</option>
+                            <option>2 Hours</option>
+                            <option>2.5 Hours</option>
+                            <option selected>3 Hours</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Difficulty
+                        Level</label>
+                    <select
+                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                        <option>Easy</option>
+                        <option selected>Medium</option>
+                        <option>Hard</option>
+                        <option>Mixed</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Topics
+                        (Optional)</label>
+                    <textarea placeholder="Specify particular topics or leave blank for all topics"
+                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 h-20"></textarea>
+                </div>
+
+                <div class="flex space-x-4 pt-4">
+                    <button type="button" onclick="closeModal()"
+                        class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="button" onclick="generatePaper()"
+                        class="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg font-semibold transition-all">
+                        Generate Paper
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let sidebarCollapsed = false;
+
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        }
+
+        // Load saved theme
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Toggle Sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleIcon = document.getElementById('sidebar-toggle-icon');
+            const logoFull = document.getElementById('logo-full');
+            const logoMini = document.getElementById('logo-mini');
+            const sidebarTexts = document.querySelectorAll('.sidebar-text');
+            const upgradeSection = document.querySelector('.sidebar-upgrade');
+
+            if (sidebarCollapsed) {
+                sidebar.classList.remove('sidebar-collapsed');
+                sidebar.classList.add('sidebar-expanded');
+                toggleIcon.classList.remove('fa-chevron-right');
+                toggleIcon.classList.add('fa-chevron-left');
+                logoFull.classList.remove('hidden');
+                logoMini.classList.add('hidden');
+                sidebarTexts.forEach(text => text.classList.remove('hidden'));
+                if (upgradeSection) upgradeSection.classList.remove('hidden');
+                sidebarCollapsed = false;
+            } else {
+                sidebar.classList.remove('sidebar-expanded');
+                sidebar.classList.add('sidebar-collapsed');
+                toggleIcon.classList.remove('fa-chevron-left');
+                toggleIcon.classList.add('fa-chevron-right');
+                logoFull.classList.add('hidden');
+                logoMini.classList.remove('hidden');
+                sidebarTexts.forEach(text => text.classList.add('hidden'));
+                if (upgradeSection) upgradeSection.classList.add('hidden');
+                sidebarCollapsed = true;
+            }
+        }
+
+        // Modal Functions
+        function openModal(subject) {
+            document.getElementById('modalSubject').value = subject;
+            document.getElementById('modal').classList.remove('hidden');
+            document.getElementById('modal').classList.add('flex');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+            document.getElementById('modal').classList.remove('flex');
+        }
+
+        function generatePaper() {
+            const subject = document.getElementById('modalSubject').value;
+            document.getElementById('paperSubject').textContent = subject;
+
+            closeModal();
+            document.getElementById('paperSection').classList.remove('hidden');
+
+            // Scroll to paper section
+            document.getElementById('paperSection').scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        function downloadPaper() {
+            // Simulate PDF download
+            alert('PDF download will be implemented with Flask backend');
+        }
+    </script>
+</body>
+
+</html>
