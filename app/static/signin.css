@@ -54,8 +54,8 @@ label {
   margin-top: 15px;
 }
 
-input[type="email"],
-input[type="password"] {
+.username,
+.password {
   padding: 10px;
   font-size: 14px;
   border: 1px solid #ccc;
