@@ -231,7 +231,8 @@
                         <h1 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
                             Samriddho's Notes <i class="fas fa-pencil-alt ml-2 text-purple-500"></i>
                         </h1>
-                        <p class="text-gray-600 dark:text-gray-400 mt-1">Get AI Generated Notes from uploaded PDFs, YouTube Links and Lecture Videos</p>
+                        <p class="text-gray-600 dark:text-gray-400 mt-1">Get AI Generated Notes from uploaded PDFs,
+                            YouTube Links and Lecture Videos</p>
 
                     </div>
                     <div class="flex items-center space-x-3">
@@ -278,7 +279,8 @@
                 <!-- Upload Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <!-- Upload PDFs -->
-                    <div class="gradient-border rounded-2xl p-6 bg-green-50 dark:bg-green-900/20 hover-lift">
+                    <form method="POST" action="{{ url_for('upload_pdf') }}" enctype="multipart/form-data"
+                        class="gradient-border rounded-2xl p-6 bg-green-50 dark:bg-green-900/20 hover-lift">
                         <div class="text-center">
                             <div
                                 class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -287,28 +289,32 @@
                             <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Upload PDFs</h3>
                             <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Upload textbooks and study
                                 materials</p>
-                            <button
+                            <input id="pdfCardInput" name="pdf_file" type="file" accept="application/pdf" class="mb-2"
+                                required />
+                            <button type="submit"
                                 class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg font-medium transition-colors">
-                                Choose Files
+                                Upload PDF
                             </button>
+                            {% if uploaded_filename %}
+                            <div class="mt-2 text-sm text-gray-700 dark:text-gray-300">Uploaded: {{ uploaded_filename }}
+                            </div>
+                            {% endif %}
                         </div>
-                    </div>
+                    </form>
 
                     <!-- YouTube Links -->
-                    <div class="gradient-border rounded-2xl p-6 bg-blue-50 dark:bg-blue-900/20 hover-lift">
-                        <div class="text-center">
-                            <div
-                                class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <i class="fas fa-link text-white text-lg"></i>
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">YouTube Links</h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Add educational video links</p>
-                            <button
-                                class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg font-medium transition-colors">
-                                Add Links
-                            </button>
-                        </div>
-                    </div>
+                    <form method="POST" action="{{ url_for('generate_notes') }}"
+                        class="rounded-2xl p-6 bg-blue-50 dark:bg-blue-900/20 hover-lift">
+                        <input type="hidden" name="card_type" value="descriptive" />
+                        <label class="block mb-2 font-medium">YouTube Link for Descriptive Notes</label>
+                        <input name="youtube_url" type="url" placeholder="https://youtu.be/VIDEO_ID" required
+                            class="mb-4 w-full" />
+                        <!-- tone, language, audio same fields -->
+                        <select name="tone" class="w-full mb-2">…</select>
+                        <select name="language" class="w-full mb-2">…</select>
+                        <label><input name="audio" type="checkbox" /> Audio?</label>
+                        <button type="submit" class="mt-4 w-full bg-blue-600 text-white py-2">Generate</button>
+                    </form>
 
                     <!-- Lectures -->
                     <div class="gradient-border rounded-2xl p-6 bg-purple-50 dark:bg-purple-900/20 hover-lift">
@@ -319,10 +325,12 @@
                             </div>
                             <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Lectures</h3>
                             <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Upload downloaded lecture files</p>
-                            <button
+                            <input id="lectureCardInput" type="file" accept="video/*,application/pdf" class="hidden" />
+                            <button id="lectureCardBtn"
                                 class="w-full bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 rounded-lg font-medium transition-colors">
                                 Upload Files
                             </button>
+                            <div id="lectureCardSelected" class="mt-2 text-sm text-gray-700 dark:text-gray-300"></div>
                         </div>
                     </div>
                 </div>
@@ -335,66 +343,64 @@
                     </div>
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Drop your PDF here</h3>
                     <p class="text-gray-600 dark:text-gray-400 mb-4">or click to browse files</p>
-                    <button
+                    <!-- Hidden file input -->
+                    <input id="pdfInput" type="file" accept="application/pdf" class="hidden" />
+                    <button id="chooseFileBtn"
                         class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium transition-colors">
                         Choose File
                     </button>
+                    <div id="selectedFile" class="mt-3 text-sm text-gray-700 dark:text-gray-300"></div>
                 </div>
 
                 <!-- Note Types -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <!-- Descriptive Notes -->
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift note-card-purple">
+                    <form method="POST" action="{{ url_for('generate_notes') }}" enctype="multipart/form-data"
+                        class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift note-card-purple">
+
+                        <!-- 1) Identify this card -->
+                        <input type="hidden" name="card_type" value="descriptive" />
+
+                        <!-- 2) File input -->
+                        <label for="pdf_file" class="block mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Upload your PDF:
+                        </label>
+                        <input id="pdf_file" name="pdf_file" type="file" accept="application/pdf" required
+                            class="mb-4 w-full text-sm text-gray-900 dark:text-gray-100" />
+
+                        <!-- 3) Tone select -->
+                        <div class="mb-3">
+                            <label class="block text-sm mb-1">Note Tone</label>
+                            <select name="tone" class="w-full px-3 py-2 border rounded-lg">
+                                <option value="professional">Professional</option>
+                                <option value="casual">Casual</option>
+                                <option value="academic">Academic</option>
+                            </select>
+                        </div>
+
+                        <!-- 4) Language select -->
+                        <div class="mb-3">
+                            <label class="block text-sm mb-1">Language</label>
+                            <select name="language" class="w-full px-3 py-2 border rounded-lg">
+                                <option value="english">English</option>
+                                <option value="bengali">Bengali</option>
+                                <option value="hindi">Hindi</option>
+                            </select>
+                        </div>
+
+                        <!-- 5) Audio checkbox -->
                         <div class="flex items-center mb-4">
-                            <div
-                                class="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mr-3">
-                                <i class="fas fa-file-alt text-purple-600 dark:text-purple-400"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-gray-900 dark:text-white">Descriptive Notes</h3>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Detailed explanations with diagrams
-                                </p>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between mb-4">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">Generated</span>
-                            <span
-                                class="bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400 px-2 py-1 rounded-full text-xs font-medium">847</span>
+                            <input name="audio" id="audio-descriptive" type="checkbox" class="mr-2" />
+                            <label for="audio-descriptive" class="text-sm">Enable Audio Format</label>
                         </div>
 
-                        <!-- Note Options -->
-                        <div class="space-y-3 mb-4">
-                            <div>
-                                <label class="block text-sm text-gray-700 dark:text-gray-300 mb-2">Note Tone</label>
-                                <select
-                                    class="w-full text-sm px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                                    <option>Professional</option>
-                                    <option>Casual</option>
-                                    <option>Academic</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm text-gray-700 dark:text-gray-300 mb-2">Language</label>
-                                <select
-                                    class="w-full text-sm px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                                    <option>English</option>
-                                    <option>Bengali</option>
-                                    <option>Hindi</option>
-                                </select>
-                            </div>
-
-                            <div class="flex items-center">
-                                <input type="checkbox" id="audio-descriptive" class="mr-2 rounded">
-                                <label for="audio-descriptive" class="text-sm text-gray-700 dark:text-gray-300">Enable
-                                    Audio Format</label>
-                            </div>
-                        </div>
-
-                        <button
-                            class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-medium transition-colors">
+                        <!-- 6) Submit button -->
+                        <button type="submit"
+                            class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg">
                             Generate Now
                         </button>
-                    </div>
+                    </form>
+
 
                     <!-- Short Notes -->
                     <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift note-card-blue">
@@ -676,6 +682,38 @@
                 sidebarCollapsed = true;
             }
         }
+
+        document.getElementById('chooseFileBtn').onclick = function () {
+            document.getElementById('pdfInput').click();
+        };
+        document.getElementById('pdfInput').onchange = function (e) {
+            const file = e.target.files[0];
+            document.getElementById('selectedFile').textContent = file ? `Selected: ${file.name}` : '';
+        };
+        // Upload PDFs card
+        document.getElementById('pdfCardBtn').onclick = function () {
+            document.getElementById('pdfCardInput').click();
+        };
+        document.getElementById('pdfCardInput').onchange = function (e) {
+            const file = e.target.files[0];
+            document.getElementById('pdfCardSelected').textContent = file ? `Selected: ${file.name}` : '';
+        };
+
+        // YouTube Links card (prompt for a link)
+        document.getElementById('linkCardBtn').onclick = function () {
+            const url = prompt('Paste your YouTube link:');
+            if (url) {
+                document.getElementById('linkCardSelected').textContent = `Link: ${url}`;
+            }
+        };
+        // Lectures card
+        document.getElementById('lectureCardBtn').onclick = function () {
+            document.getElementById('lectureCardInput').click();
+        };
+        document.getElementById('lectureCardInput').onchange = function (e) {
+            const file = e.target.files[0];
+            document.getElementById('lectureCardSelected').textContent = file ? `Selected: ${file.name}` : '';
+        };
     </script>
 </body>
 
