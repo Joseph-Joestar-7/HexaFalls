@@ -34,8 +34,7 @@ def home():
 @app.route('/dashboard')
 @login_required_user
 def dashboard():
-    
-    return render_template('dashboard.html')
+    return render_template('dashboardfree.html')
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -54,7 +53,7 @@ def signup():
         session['user_id'] = user_data.id
         return redirect(url_for('complete_profile'))
 
-    return render_template('signup.html', form=form)
+    return render_template('sign up.html', form=form)
 
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
@@ -70,7 +69,7 @@ def signin():
         else:
             flash("Username and Password do not match! Please try again", "danger")
 
-    return render_template('signin.html', form=form)
+    return render_template('sign in.html', form=form)
 
 @app.route('/logout')
 def logout():

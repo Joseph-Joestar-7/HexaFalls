@@ -44,3 +44,46 @@ class UserProfile(db.Model):
     user = db.relationship('User', back_populates='profile')
     # Many-to-many: which subjects this user studies
     subjects = db.relationship('Subject', secondary=user_subjects, back_populates='students')
+
+class Subject(db.Model):
+    __tablename__ = 'subject'
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(20), unique=True, nullable=False)   # e.g. "PHY101"
+    name = db.Column(db.String(100), nullable=False)               # e.g. "Physics"
+
+    # Which students have chosen this subject
+    students = db.relationship('UserProfile', secondary=user_subjects, back_populates='subjects')
+    # Mappings to class/exam
+    mappings = db.relationship('SubjectMapping', back_populates='subject', cascade='all, delete-orphan')
+
+class SubjectMapping(db.Model):
+    __tablename__ = 'subject_mapping'
+    id = db.Column(db.Integer, primary_key=True)
+    subject_id = db.Column(db.Integer, db.ForeignKey('subject.id'), nullable=False)
+    class_level = db.Column(db.String(50), nullable=False)   # e.g. "Class 9", "BTech 2nd Sem"
+    target_exam = db.Column(db.String(50), nullable=False)   # e.g. "School Exams", "JEE"
+
+    subject = db.relationship('Subject', back_populates='mappings')
+
+class Upload(db.Model):
+    __tablename__ = 'upload'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    # One of these will be filled
+    pdf_url = db.Column(db.String(500), nullable=True)
+    youtube_url = db.Column(db.String(500), nullable=True)
+
+    # What kind of upload this is: "pdf" or "youtube"
+    upload_type = db.Column(db.String(10), nullable=False)  
+
+    # Timestamp for ordering
+    uploaded_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+
+    # Optional fields
+    status = db.Column(db.String(50), default="pending")  # "pending", "processed", "failed"
+    notes_generated = db.Column(db.Boolean, default=False)
+    quiz_generated = db.Column(db.Boolean, default=False)
+
+    # Relationship
+    user = db.relationship('User', backref='uploads')
