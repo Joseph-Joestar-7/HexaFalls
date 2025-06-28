@@ -174,12 +174,12 @@
 
             <!-- Navigation -->
             <nav class="flex-1 px-2 py-4 space-y-1">
-                <a href="dashboard.html"
-                    class="flex items-center px-3 py-2 text-white bg-purple-600 rounded-lg">
+                <a href="dashboard.html" class="flex items-center px-3 py-2 text-white bg-purple-600 rounded-lg">
                     <i class="fas fa-home w-5 h-5"></i>
                     <span class="ml-3 sidebar-text">Dashboard</span>
                 </a>
-                <a href="notes.html" class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <a href="notes.html"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <i class="fas fa-sticky-note w-5 h-5"></i>
                     <span class="ml-3 sidebar-text">My Notes</span>
                 </a>
@@ -271,47 +271,12 @@
                         <p class="text-xl text-white/80">Start your premium learning journey today</p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-                        <!-- Basic Plan -->
-                        <div class="plan-card bg-white dark:bg-gray-800 rounded-2xl p-8 hover-lift"
-                            onclick="selectPlan('basic')">
-                            <div class="text-center mb-6">
-                                <div
-                                    class="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <i class="fas fa-rocket text-blue-500 text-2xl"></i>
-                                </div>
-                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Basic</h3>
-                                <div class="text-4xl font-bold text-gray-900 dark:text-white mb-1">₹299</div>
-                                <p class="text-gray-600 dark:text-gray-400">per month</p>
-                            </div>
-                            <div class="space-y-4 mb-8">
-                                <div class="flex items-center space-x-3">
-                                    <i class="fas fa-check text-green-500"></i>
-                                    <span class="text-gray-700 dark:text-gray-300">100 AI-generated notes</span>
-                                </div>
-                                <div class="flex items-center space-x-3">
-                                    <i class="fas fa-check text-green-500"></i>
-                                    <span class="text-gray-700 dark:text-gray-300">50 quiz attempts</span>
-                                </div>
-                                <div class="flex items-center space-x-3">
-                                    <i class="fas fa-check text-green-500"></i>
-                                    <span class="text-gray-700 dark:text-gray-300">Basic analytics</span>
-                                </div>
-                                <div class="flex items-center space-x-3">
-                                    <i class="fas fa-check text-green-500"></i>
-                                    <span class="text-gray-700 dark:text-gray-300">Email support</span>
-                                </div>
-                            </div>
-                            <button
-                                class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-colors">
-                                Choose Basic
-                            </button>
-                        </div>
+                    <div class="grid grid-cols-1 md:grid-cols-1 gap-8 mb-12">
 
                         <!-- Premium Plan -->
                         <div class="plan-card bg-white dark:bg-gray-800 rounded-2xl p-8 hover-lift selected shimmer"
                             onclick="selectPlan('premium')">
-                            
+
                             <div class="text-center mb-6">
                                 <div
                                     class="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -349,41 +314,7 @@
                             </button>
                         </div>
 
-                        <!-- Enterprise Plan -->
-                        <div class="plan-card bg-white dark:bg-gray-800 rounded-2xl p-8 hover-lift"
-                            onclick="selectPlan('enterprise')">
-                            <div class="text-center mb-6">
-                                <div
-                                    class="w-16 h-16 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <i class="fas fa-building text-yellow-500 text-2xl"></i>
-                                </div>
-                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Enterprise</h3>
-                                <div class="text-4xl font-bold text-gray-900 dark:text-white mb-1">₹999</div>
-                                <p class="text-gray-600 dark:text-gray-400">per month</p>
-                            </div>
-                            <div class="space-y-4 mb-8">
-                                <div class="flex items-center space-x-3">
-                                    <i class="fas fa-check text-green-500"></i>
-                                    <span class="text-gray-700 dark:text-gray-300">Everything in Premium</span>
-                                </div>
-                                <div class="flex items-center space-x-3">
-                                    <i class="fas fa-check text-green-500"></i>
-                                    <span class="text-gray-700 dark:text-gray-300">Custom AI training</span>
-                                </div>
-                                <div class="flex items-center space-x-3">
-                                    <i class="fas fa-check text-green-500"></i>
-                                    <span class="text-gray-700 dark:text-gray-300">Team collaboration</span>
-                                </div>
-                                <div class="flex items-center space-x-3">
-                                    <i class="fas fa-check text-green-500"></i>
-                                    <span class="text-gray-700 dark:text-gray-300">Dedicated support</span>
-                                </div>
-                            </div>
-                            <button
-                                class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg transition-colors">
-                                Choose Enterprise
-                            </button>
-                        </div>
+
                     </div>
 
                     <!-- Payment Form -->
@@ -395,7 +326,8 @@
                                 encryption</p>
                         </div>
 
-                        <form id="paymentForm" class="space-y-6">
+                        <form id="paymentForm" class="space-y-6" method="POST" action="{{ url_for('payments') }}">
+                            {{ form.csrf_token }}
                             <!-- Selected Plan Display -->
                             <div id="selectedPlanDisplay"
                                 class="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 mb-6">
@@ -469,11 +401,14 @@
                             </div>
 
                             <!-- Submit Button -->
-                            <a href="dashboard.html"
-                                class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-4 px-6 rounded-lg transition-colors flex items-center justify-center text-center">
-                                <i class="fas fa-lock mr-2"></i>
-                                Complete Purchase - ₹499
-                            </a>
+                            
+
+                                <button type="submit"
+                                    class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-4 px-6 rounded-lg transition-colors flex items-center justify-center text-center">
+                                    <i class="fas fa-lock mr-2"></i>
+                                    {{ form.submit.label.text }}
+                                </button>
+                            </form>
 
                             <div class="text-center space-y-2">
                                 <p class="text-sm text-gray-600 dark:text-gray-400">🔒 Your payment information is
@@ -557,7 +492,6 @@
             const plans = {
                 basic: { name: 'Basic Plan', price: '₹299' },
                 premium: { name: 'Premium Plan', price: '₹499' },
-                enterprise: { name: 'Enterprise Plan', price: '₹999' }
             };
 
             const selectedPlan = plans[planType];

@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectField, SelectMultipleField
-from wtforms.validators import DataRequired, Email, EqualTo, Length
+from wtforms import StringField, PasswordField, SubmitField, SelectField, SelectMultipleField, HiddenField
+from wtforms.validators import DataRequired, Email, EqualTo, Length, Regexp
 
 class RegisterForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()])
@@ -18,3 +18,6 @@ class ProfileForm(FlaskForm):
     target_exam = SelectField("Target Exam", validators=[DataRequired()], choices=[])
     subjects = SelectMultipleField("Subjects", validators=[DataRequired()], choices=[])
     submit = SubmitField("Save Profile")
+
+class PaymentForm(FlaskForm):
+    submit = SubmitField('Complete Purchase')

@@ -148,7 +148,7 @@
 
             <!-- Navigation -->
             <nav class="flex-1 px-2 py-4 space-y-1">
-                <a href="dashboard.html"
+                <a href="{{ url_for('dashboard' )}}"
                     class="flex items-center px-3 py-2 text-white bg-purple-600 rounded-lg">
                     <i class="fas fa-home w-5 h-5"></i>
                     <span class="ml-3 sidebar-text">Dashboard</span>
@@ -192,7 +192,7 @@
             <!-- Upgrade to Pro -->
             <div class="p-4">
                 <div class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-3 text-center sidebar-upgrade">
-                    <p class="text-white text-sm font-medium sidebar-text">Upgrade to Pro</p>
+                    <a href="{{ url_for('logout') }}" class="text-white text-sm font-medium sidebar-text">Logout</a>
                 </div>
             </div>
         </div>
@@ -204,7 +204,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
-                            Samriddho's Notes <i class="fas fa-pencil-alt ml-2 text-purple-500"></i>
+                            Live Dashboard <i class="fas fa-pencil-alt ml-2 text-purple-500"></i>
                         </h1>
 
                     </div>
@@ -222,8 +222,8 @@
 
                         <div class="flex items-center space-x-3 pl-3 border-l border-gray-200 dark:border-gray-700">
                             <div class="text-right">
-                                <p class="text-sm font-semibold dark:text-white">Samriddho</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">Premium Student</p>
+                                <p class="text-sm font-semibold dark:text-white">{{ user_data.username }}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Premium Tier</p>
                             </div>
                             <div
                                 class="w-9 h-9 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
@@ -239,7 +239,7 @@
                     <!-- Welcome Message -->
                     <div class="mb-8">
                         <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                            Welcome back, Samriddho! ✨
+                            Welcome back, {{ user_data.username }}! ✨
                         </h1>
                         <p class="text-gray-600 dark:text-gray-400">Ready to continue your learning journey?</p>
                     </div>
@@ -354,7 +354,7 @@
                                     </div>
                                 </div>
 
-                                <a href="notes.html"
+                                <a href="{{ url_for('upload_pdf') }}"
                                     class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg font-semibold hover:from-purple-600 hover:to-blue-600 transition-all">
                                     <i class="fas fa-rocket mr-2"></i>
                                     Generate Notes Now
