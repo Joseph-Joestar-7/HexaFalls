@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Signup - EduSpark</title>
+  <link rel="stylesheet" href="../static/signup.css">
+</head>
+
+<body class="signup-body">
+
+  <div class="signup-container">
+    <h2>Create Your Account</h2>
+    <form method="post" action="{{ url_for('signup') }}">
+      {{ form.hidden_tag() }}
+      <label for="{{ form.username.id }}">👤 Username</label>
+      {{ form.username(class=username, id=form.username.id, placeholder="Enter Username", required=True) }}
+
+      <label for="{{ form.email.id }}">📧 Email Address</label>
+      {{ form.email(class=email, id=form.email.id, placeholder="Enter email address", required=True) }}
+
+      <label for="{{ form.password.id }}">🔒 Password</label>
+      {{ form.password(class=password, id=form.password.id, placeholder="Enter your Password", required=True) }}
+
+      <button type="submit" class="primary-btn">
+        {{ form.submit.label.text }}
+      </button>
+    </form>
+    <p>Already have an account? <a href="{{ url_for('signin') }}">Login</a></p>
+  </div>
+
+</body>
+
+</html>

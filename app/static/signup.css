@@ -31,7 +31,7 @@ body.signup-body {
   color: #004080;
 }
 
-.signup-container form input {
+.signup-container form input{
   width: 100%;
   padding: 12px 14px;
   margin-bottom: 18px;
@@ -62,6 +62,16 @@ body.signup-body {
   background: #003366;
 }
 
+.username,
+.email,
+.password {
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+
 .signup-container p {
   text-align: center;
   margin-top: 20px;
@@ -76,4 +86,27 @@ body.signup-body {
 
 .signup-container a:hover {
   text-decoration: underline;
+}
+
+.options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+.options a {
+  text-decoration: none;
+  color: #1a73e8;
+}
+
+.checkbox{
+  display: flex;
+  justify-content: left;
+  width: 200px;
+}
+.check{
+  width: 20px;
+  padding: 0;
 }
