@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduPortal - AI-Powered Learning Platform</title>
+  <meta name="description" content="Transform your learning with AI-powered note generation, multilingual support, and personalized study plans" />
+  <link rel="stylesheet" href="../static/home.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <nav class="navbar">
+      <div class="logo">EduPortal</div>
+      <ul class="nav-links">
+        <!-- <li><a href="#home">Home</a></li> -->
+        <li><a href="#features">Features</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><button class="sign-in-btn">Dashboard</button></li>
+        <li><button class="sign-in-btn">Sign In</button></li>
+      </ul>
+      <button class="theme-toggle" id="themeToggle">
+        <span class="sun-icon">☀️</span>
+        <span class="moon-icon">🌙</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="home" class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">Empower Your Learning Journey</h1>
+      <p class="hero-description">
+        Transform any content into personalized, multilingual notes. Upload PDFs, videos, or lectures and let AI create the perfect study material for you.
+      </p>
+      <div class="hero-buttons">
+        <button class="cta-button primary">
+          🚀 Start Learning Now
+        </button>
+        <button class="cta-button secondary">Watch Demo</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features">
+    <div class="container">
+      <div class="section-header">
+        <h2>Powerful Learning Features</h2>
+        <p>Everything you need for effective, personalized learning</p>
+      </div>
+      
+      <div class="features-grid">
+        <div class="feature-card" data-delay="0">
+          <div class="feature-icon">📝</div>
+          <h3>Smart Note Generation</h3>
+          <p>Upload PDFs, YouTube links, or lecture files to generate descriptive, short, or formula-based notes automatically.</p>
+        </div>
+        
+        <div class="feature-card" data-delay="200">
+          <div class="feature-icon">🔊</div>
+          <h3>Audio & Accessibility</h3>
+          <p>Convert notes to audio format for visually impaired students and accessibility support.</p>
+        </div>
+        
+        <div class="feature-card" data-delay="400">
+          <div class="feature-icon">🌍</div>
+          <h3>Multilingual Support</h3>
+          <p>Generate notes and interact in multiple languages for global accessibility.</p>
+        </div>
+        
+        <div class="feature-card" data-delay="600">
+          <div class="feature-icon">💬</div>
+          <h3>AI Chatbot Tutor</h3>
+          <p>24/7 multilingual chatbot for instant doubt clearing and topic explanations.</p>
+        </div>
+        
+        <div class="feature-card" data-delay="800">
+          <div class="feature-icon">📊</div>
+          <h3>Smart Quizzes & Tests</h3>
+          <p>Adaptive testing system that identifies weak areas and suggests focused study plans.</p>
+        </div>
+        
+        <div class="feature-card" data-delay="1000">
+          <div class="feature-icon">📈</div>
+          <h3>Progress Tracking</h3>
+          <p>Visual progress graphs and personalized study scheduling based on your performance.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Note Types Section -->
+  <section class="note-types">
+    <div class="container">
+      <div class="section-header">
+        <h2>Three Types of Smart Notes</h2>
+        <p>Choose the format that works best for your learning style</p>
+      </div>
+      
+      <div class="tabs">
+        <div class="tab-buttons">
+          <button class="tab-btn active" data-tab="descriptive">Descriptive</button>
+          <button class="tab-btn" data-tab="short">Short Notes</button>
+          <button class="tab-btn" data-tab="formula">Formula Based</button>
+        </div>
+        
+        <div class="tab-content">
+          <div class="tab-pane active" id="descriptive">
+            <div class="note-type-card">
+              <h3>Descriptive Notes</h3>
+              <p>Comprehensive notes with definitions, key points, diagrams, and formulas</p>
+              <div class="features-list">
+                <div class="feature-item">✅ Detailed explanations</div>
+                <div class="feature-item">✅ Visual diagrams</div>
+                <div class="feature-item">✅ Key formulas</div>
+                <div class="feature-item">✅ Examples</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="tab-pane" id="short">
+            <div class="note-type-card">
+              <h3>Short Notes</h3>
+              <p>Concise bullet points covering essential topics for quick revision</p>
+              <div class="features-list">
+                <div class="feature-item">✅ Quick bullet points</div>
+                <div class="feature-item">✅ Important topics only</div>
+                <div class="feature-item">✅ Easy to scan</div>
+                <div class="feature-item">✅ Time-saving</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="tab-pane" id="formula">
+            <div class="note-type-card">
+              <h3>Formula Notes</h3>
+              <p>Specialized notes focusing on mathematical formulas and chemical reactions</p>
+              <div class="features-list">
+                <div class="feature-item">✅ Mathematical formulas</div>
+                <div class="feature-item">✅ Chemical reactions</div>
+                <div class="feature-item">✅ Quick reference</div>
+                <div class="feature-item">✅ Revision friendly</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="about">
+    <div class="container">
+      <h2>About EduPortal</h2>
+      <p>
+        EduPortal is a revolutionary educational platform that harnesses the power of AI to transform how students learn. 
+        By analyzing your uploaded content - whether it's PDFs, YouTube videos, or lecture recordings - we create personalized, 
+        multilingual notes tailored to your learning style. Our comprehensive suite includes progress tracking, adaptive quizzes, 
+        and an intelligent chatbot tutor, all designed to make learning more effective, accessible, and enjoyable for students worldwide.
+      </p>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section id="faq" class="faq">
+    <div class="container">
+      <div class="section-header">
+        <h2>Frequently Asked Questions</h2>
+        <p>Everything you need to know about EduPortal</p>
+      </div>
+      
+      <div class="faq-list">
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>How does the note generation work?</h3>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>Simply upload your PDFs, paste YouTube links, or upload lecture files. Our AI analyzes the content and generates personalized notes in your preferred format - descriptive, short, or formula-based.</p>
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>Can I customize the tone of my notes?</h3>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>Yes! You can choose from professional, casual, example-based, or other moods to match your learning style. The AI adapts the language and examples accordingly.</p>
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>Is the platform accessible for visually impaired students?</h3>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>Absolutely! We offer audio conversion of all notes, screen reader compatibility, and voice-based interactions to ensure accessibility for all students.</p>
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>How many languages are supported?</h3>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>Our platform supports over 50 languages for both note generation and chatbot interactions, making education accessible globally.</p>
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>How does the progress tracking work?</h3>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>The system tracks your quiz performance, study time, and topic mastery. It creates visual graphs and suggests personalized study schedules based on your strengths and areas for improvement.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>EduPortal</h3>
+          <p>Empowering students worldwide with AI-powered personalized learning solutions.</p>
+        </div>
+        <div class="footer-section">
+          <h4>Features</h4>
+          <ul>
+            <li><a href="#">Note Generation</a></li>
+            <li><a href="#">Progress Tracking</a></li>
+            <li><a href="#">AI Chatbot</a></li>
+            <li><a href="#">Multilingual Support</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Connect</h4>
+          <ul>
+            <li><a href="#">Twitter</a></li>
+            <li><a href="#">LinkedIn</a></li>
+            <li><a href="#">Facebook</a></li>
+            <li><a href="#">Instagram</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 EduPortal.❣️All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../static/home.js"></script>
+</body>
+</html>
+

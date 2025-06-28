@@ -1,0 +1,79 @@
+/* Reset default styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body.signup-body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to right, #adcaef, #023064);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #333;
+}
+
+.signup-container {
+  background: #fff;
+  padding: 50px;             /* Increased padding */
+  width: 100%;
+  max-width: 800px;          /* Increased from 400px to 500px */
+  max-height: 1000px;         /* Increased from 400px to 500px */
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.signup-container h2 {
+  margin-bottom: 25px;
+  text-align: center;
+  color: #004080;
+}
+
+.signup-container form input {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border 0.3s;
+}
+
+.signup-container form input:focus {
+  border-color: #004080;
+  outline: none;
+}
+
+.signup-container form button {
+  width: 100%;
+  padding: 12px;
+  background: #004080;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.signup-container form button:hover {
+  background: #003366;
+}
+
+.signup-container p {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.signup-container a {
+  color: #004080;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.signup-container a:hover {
+  text-decoration: underline;
+}
