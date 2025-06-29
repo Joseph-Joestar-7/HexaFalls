@@ -153,11 +153,11 @@
                     <i class="fas fa-home w-5 h-5"></i>
                     <span class="ml-3 sidebar-text">Dashboard</span>
                 </a>
-                <a href="notes.html" class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <a href="{{ url_for('upload_pdf') }}" class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <i class="fas fa-sticky-note w-5 h-5"></i>
                     <span class="ml-3 sidebar-text">My Notes</span>
                 </a>
-                <a href="quiz.html"
+                <a href="{{ url_for('quizes') }}"
                     class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <i class="fas fa-question-circle w-5 h-5"></i>
                     <span class="ml-3 sidebar-text">Quizzes & Tests</span>
@@ -167,7 +167,7 @@
                     <i class="fas fa-chart-line w-5 h-5"></i>
                     <span class="ml-3 sidebar-text">Progress</span>
                 </a>
-                <a href="chatbot.html"
+                <a href="{{ url_for('chat_page') }}"
                     class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <i class="fas fa-robot w-5 h-5"></i>
                     <span class="ml-3 sidebar-text">AI Assistant</span>
@@ -527,10 +527,10 @@
                                     <i class="fas fa-arrow-right text-xl"></i>
                                 </div>
                                 <p class="text-blue-100 text-sm mb-4">Access your personalized study materials</p>
-                                <button
+                                <a href="{{ url_for('upload_pdf') }}"
                                     class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                                     View Notes
-                                </button>
+                                </a>
                             </div>
 
                             <div class="bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl p-6 text-white hover-lift animate-float"

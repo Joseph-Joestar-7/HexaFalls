@@ -1,7 +1,6 @@
 from functools import wraps
-from flask_login import current_user
 from app import app, db, csrf
-from flask import flash, render_template, redirect, url_for, session, request, current_app
+from flask import flash, render_template, redirect, url_for, session, request, current_app, jsonify
 from app.forms import RegisterForm,LoginForm, PaymentForm
 from app.models import User
 import os
@@ -15,6 +14,9 @@ from datetime import datetime
 import regex as re
 import pythoncom
 from app.youtubeNotesGenerator import get_transcript, language_convertor, notes_generator
+from app.vectorStore import generate_document_quiz
+from app.chatbot import chat_response, initialize_index_from_text
+import uuid
 
 WORKDIR = os.getcwd()
 ALLOWED_EXTENSIONS = {'pdf', 'mp4', 'mov', 'avi'}
@@ -225,6 +227,16 @@ def generate_notes():
 
             final_notes=getFinalNotes(docs, notes_type, tone, language=language)
             print(final_notes)
+            quiz=generate_document_quiz(
+                final_notes,
+                file_context=filename[:-3],
+                question_level="Advanced",
+                number=5
+            )
+
+            print(quiz)
+
+            
 
             md_file = os.path.join(WORKDIR, filename[:-3]+"md")
             docx_file = os.path.join(WORKDIR, filename[:-3]+"docx")
@@ -575,7 +587,55 @@ def generate_notes():
             return redirect(request.referrer)
 
         return render_template('notes.html', uploaded_filename=uploaded_filename)
-            
+@app.route('/quiz')
+@login_required_user
+def quizes():
+    return render_template('quiz.html')
+@app.route('/chat', methods=['GET'])
+def chat_page():
+    return render_template('chatbot.html')
+
+
+@app.route('/chat/history', methods=['GET'])
+@csrf.exempt
+def chat_history():
+    # Use session or user_id to identify the user
+    session_id = session.get('chat_session_id')
+    if not session_id:
+        return jsonify({'history': []})
+    # Suppose you store history in session (for demo; use DB for production)
+    history = session.get('chat_history', [])
+    return jsonify({'history': history})
+
+@app.route('/chat/api', methods=['POST'])
+@csrf.exempt
+def chat_api():
+    if not request.is_json:
+        return jsonify({'error': 'Invalid content type, must be application/json.'}), 400
+
+    data = request.get_json(silent=True)
+    if not data or 'message' not in data:
+        return jsonify({'error': 'No message provided.'}), 400
+
+    user_message = data.get('message', '').strip()
+    if not user_message:
+        return jsonify({'error': 'No message provided.'}), 400
+
+    # Use a session ID for chat history
+    if 'chat_session_id' not in session:
+        session['chat_session_id'] = str(uuid.uuid4())
+    session_id = session['chat_session_id']
+
+    try:
+        reply = chat_response(user_message, session_id)
+        # Save to session history (for demo; use DB for production)
+        history = session.get('chat_history', [])
+        history.append({'role': 'user', 'text': user_message})
+        history.append({'role': 'bot', 'text': reply})
+        session['chat_history'] = history
+        return jsonify({'reply': reply})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500   
 
 @app.route('/logout')
 @login_required_user
