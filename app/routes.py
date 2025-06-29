@@ -17,6 +17,7 @@ from app.youtubeNotesGenerator import get_transcript, language_convertor, notes_
 from app.vectorStore import generate_document_quiz
 from app.chatbot import chat_response, initialize_index_from_text
 import uuid
+from app.qspgenerator import question_paper
 
 WORKDIR = os.getcwd()
 ALLOWED_EXTENSIONS = {'pdf', 'mp4', 'mov', 'avi'}
@@ -650,6 +651,47 @@ def chat_api():
         return jsonify({'reply': reply})
     except Exception as e:
         return jsonify({'error': str(e)}), 500   
+    
+@app.route('/paper', methods=['GET', 'POST'])
+@csrf.exempt
+def paper():
+    generated_paper = None
+    if request.method == 'POST':
+        subject = request.form.get('subject')
+        marks = request.form.get('marks')
+        duration = request.form.get('duration')
+        difficulty = request.form.get('difficulty')
+        topics = request.form.get('topics', '')
+        print(subject, marks, duration, difficulty, topics)
+        try:
+            generated_paper = question_paper(subject, marks, duration, difficulty, topics)
+        except Exception as e:
+            generated_paper = f"Error generating paper: {str(e)}"
+        md_file = os.path.join(WORKDIR, "notes.md")
+        docx_file = os.path.join(WORKDIR, "QP.docx")
+        pdf_file  = os.path.join(WORKDIR, "QP.pdf")
+        with open(md_file, "w", encoding="utf-8") as f:
+            f.write(generated_paper.strip())
+        print(f"[{datetime.now()}] Wrote Markdown → {md_file}")
+        pypandoc.convert_file(
+            source_file=md_file,
+            to="docx",
+            outputfile=docx_file,
+            extra_args=[
+                "--toc",            
+                "--toc-depth=2",    
+            ]
+        )
+        print(f"[{datetime.now()}] Converted → {docx_file}")
+
+        pythoncom.CoInitialize()
+        try:
+            convert(docx_file, pdf_file)
+        finally:
+            pythoncom.CoUninitialize()
+        print(f"[{datetime.now()}] Converted → {pdf_file}")
+        return render_template('paper.html', generated_paper=generated_paper)
+    return render_template('paper.html', generated_paper=generated_paper)
 
 @app.route('/logout')
 @login_required_user
