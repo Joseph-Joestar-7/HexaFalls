@@ -1,6 +1,6 @@
 from functools import wraps
 from app import app, db, csrf
-from flask import flash, render_template, redirect, url_for, session, request, current_app, jsonify
+from flask import flash, render_template, redirect, url_for, session, request, current_app, jsonify, send_from_directory
 from app.forms import RegisterForm,LoginForm, PaymentForm
 from app.models import User
 import os
@@ -22,6 +22,8 @@ WORKDIR = os.getcwd()
 ALLOWED_EXTENSIONS = {'pdf', 'mp4', 'mov', 'avi'}
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+UNITY_SIM_DIR = os.path.join(os.path.dirname(__file__), 'unity_webgl_build')  # Unity build folder
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -66,6 +68,15 @@ def dashboard():
         return render_template('dashboardfree.html', user_data=user_data)
     else:
         return render_template('dashboard.html', user_data=user_data)
+    
+# ---- Unity Simulation Route ----
+@app.route('/simulation')
+def simulation():
+    return render_template('index.html')  # The Unity index.html
+
+@app.route('/simulation/<path:filename>')
+def simulation_files(filename):
+    return send_from_directory(UNITY_SIM_DIR, filename)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
