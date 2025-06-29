@@ -23,7 +23,7 @@ ALLOWED_EXTENSIONS = {'pdf', 'mp4', 'mov', 'avi'}
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-UNITY_SIM_DIR = os.path.join(os.path.dirname(__file__), 'unity_webgl_build')  # Unity build folder
+UNITY_SIM_DIR = os.path.join(os.path.dirname(__file__), 'templates')  # Unity build folder
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -71,12 +71,15 @@ def dashboard():
     
 # ---- Unity Simulation Route ----
 @app.route('/simulation')
+@login_required_user
 def simulation():
-    return render_template('index.html')  # The Unity index.html
+    return render_template("index.html")
 
+# Serve Unity WebGL files
 @app.route('/simulation/<path:filename>')
+@login_required_user
 def simulation_files(filename):
-    return send_from_directory(UNITY_SIM_DIR, filename)
+    return send_from_directory('static/UnityBuild', filename)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
