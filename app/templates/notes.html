@@ -229,12 +229,12 @@
 
             <!-- Navigation -->
             <nav class="flex-1 px-2 py-4 space-y-1">
-                <a href="dashboard.html"
+                <a href="{{ url_for('dashboard') }}"
                     class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <i class="fas fa-home w-5 h-5"></i>
                     <span class="ml-3 sidebar-text">Dashboard</span>
                 </a>
-                <a href="notes.html" class="flex items-center px-3 py-2 text-white bg-purple-600 rounded-lg">
+                <a href="{{ url_for('upload_pdf') }}" class="flex items-center px-3 py-2 text-white bg-purple-600 rounded-lg">
                     <i class="fas fa-sticky-note w-5 h-5"></i>
                     <span class="ml-3 sidebar-text">My Notes</span>
                 </a>
@@ -285,7 +285,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
-                            Samriddho's Notes <i class="fas fa-pencil-alt ml-2 text-purple-500"></i>
+                            My Notes <i class="fas fa-pencil-alt ml-2 text-purple-500"></i>
                         </h1>
                         <p class="text-gray-600 dark:text-gray-400 mt-1">Get AI Generated Notes from uploaded PDFs,
                             YouTube Links and Lecture Videos</p>

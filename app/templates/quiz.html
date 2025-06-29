@@ -243,12 +243,12 @@
 
             <!-- Navigation -->
             <nav class="flex-1 px-2 py-4 space-y-1">
-                <a href="dashboard.html"
+                <a href="{{ url_for('dashboard') }}"
                     class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <i class="fas fa-home w-5 h-5"></i>
                     <span class="ml-3 sidebar-text">Dashboard</span>
                 </a>
-                <a href="notes.html"
+                <a href="{{ url_for('upload_pdf') }}"
                     class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <i class="fas fa-sticky-note w-5 h-5"></i>
                     <span class="ml-3 sidebar-text">My Notes</span>

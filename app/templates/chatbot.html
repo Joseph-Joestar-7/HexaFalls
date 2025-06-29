@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -63,104 +63,117 @@
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
+
         body {
             font-family: 'Inter', sans-serif;
         }
-        
+
         .sidebar-collapsed {
             width: 60px;
         }
-        
+
         .sidebar-expanded {
             width: 256px;
         }
-        
+
         .transition-width {
             transition: width 0.3s ease;
         }
-        
+
         .chat-bubble {
             animation: slideIn 0.3s ease-out;
         }
-        
+
         @keyframes slideIn {
             from {
                 opacity: 0;
                 transform: translateY(10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-        
+
         .hover-lift {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        
+
         .hover-lift:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
-        
+
         .pulse-dot {
             animation: pulse 2s infinite;
         }
-        
+
         @keyframes pulse {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: scale(1);
                 opacity: 1;
             }
+
             50% {
                 transform: scale(1.1);
                 opacity: 0.8;
             }
         }
-        
+
         .chat-container {
             max-height: 60vh;
             overflow-y: auto;
         }
-        
+
         .chat-container::-webkit-scrollbar {
             width: 6px;
         }
-        
+
         .chat-container::-webkit-scrollbar-track {
             background: #f1f1f1;
             border-radius: 10px;
         }
-        
+
         .chat-container::-webkit-scrollbar-thumb {
             background: #c1c1c1;
             border-radius: 10px;
         }
-        
+
         .chat-container::-webkit-scrollbar-thumb:hover {
             background: #a8a8a8;
         }
-        
+
         .dark .chat-container::-webkit-scrollbar-track {
             background: #374151;
         }
-        
+
         .dark .chat-container::-webkit-scrollbar-thumb {
             background: #6b7280;
         }
-        
+
         .dark .chat-container::-webkit-scrollbar-thumb:hover {
             background: #9ca3af;
         }
-        
+
         @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
     </style>
 </head>
+
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
     <div class="flex h-screen">
         <!-- Sidebar -->
@@ -168,13 +181,15 @@
             <!-- Logo -->
             <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                 <div id="logo-full" class="flex items-center">
-                    <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
                         <i class="fas fa-graduation-cap text-white text-sm"></i>
                     </div>
                     <span class="ml-3 text-lg font-bold text-gray-900 dark:text-white sidebar-text">EduTrack</span>
                 </div>
                 <div id="logo-mini" class="hidden justify-center w-full">
-                    <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
                         <i class="fas fa-graduation-cap text-white text-sm"></i>
                     </div>
                 </div>
@@ -182,22 +197,26 @@
                     <i id="sidebar-toggle-icon" class="fas fa-chevron-left text-gray-600 dark:text-gray-400"></i>
                 </button>
             </div>
-            
+
             <!-- Navigation -->
             <nav class="flex-1 px-2 py-4 space-y-1">
-                <a href="dashboard.html" class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <a href="dashboard.html"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <i class="fas fa-home w-5 h-5"></i>
                     <span class="ml-3 sidebar-text">Dashboard</span>
                 </a>
-                <a href="notes.html" class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <a href="notes.html"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <i class="fas fa-sticky-note w-5 h-5"></i>
                     <span class="ml-3 sidebar-text">My Notes</span>
                 </a>
-                <a href="quiz.html" class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <a href="quiz.html"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <i class="fas fa-question-circle w-5 h-5"></i>
                     <span class="ml-3 sidebar-text">Quizzes & Tests</span>
                 </a>
-                <a href="#" class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <a href="#"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <i class="fas fa-chart-line w-5 h-5"></i>
                     <span class="ml-3 sidebar-text">Progress</span>
                 </a>
@@ -205,20 +224,23 @@
                     <i class="fas fa-robot w-5 h-5"></i>
                     <span class="ml-3 sidebar-text">AI Assistant</span>
                 </a>
-                <a href="#" class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <a href="#"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <i class="fas fa-calendar w-5 h-5"></i>
                     <span class="ml-3 sidebar-text">Study Schedule</span>
                 </a>
-                <a href="paper.html" class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <a href="paper.html"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <i class="fas fa-file-alt w-5 h-5"></i>
                     <span class="ml-3 sidebar-text">Question Papers</span>
                 </a>
-                <a href="#" class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <a href="#"
+                    class="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <i class="fas fa-cog w-5 h-5"></i>
                     <span class="ml-3 sidebar-text">Settings</span>
                 </a>
             </nav>
-            
+
             <!-- Upgrade to Pro -->
             <div class="p-4">
                 <div class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-3 text-center sidebar-upgrade">
@@ -234,33 +256,38 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-2xl font-bold gradient-text flex items-center">
-                            AI Learning Assistant 
-                            <span class="inline-block bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm px-3 py-1 rounded-full ml-2">
+                            AI Learning Assistant
+                            <span
+                                class="inline-block bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm px-3 py-1 rounded-full ml-2">
                                 🌐 Multilingual
                             </span>
                         </h1>
-                        <p class="text-gray-600 dark:text-gray-400 mt-1">Get instant help with your doubts and questions</p>
+                        <p class="text-gray-600 dark:text-gray-400 mt-1">Get instant help with your doubts and questions
+                        </p>
                     </div>
                     <div class="flex items-center space-x-3">
-                    <button onclick="toggleTheme()" class="p-2.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200">
-                        <i id="theme-icon" class="fas fa-moon"></i>
-                    </button>
-                    
-                    <button class="relative p-2.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200">
-                        <i class="fas fa-bell"></i>
-                        <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
-                    </button>
-                    
-                    <div class="flex items-center space-x-3 pl-3 border-l border-gray-200 dark:border-gray-700">
-                        <div class="text-right">
-                            <p class="text-sm font-semibold dark:text-white">Samriddho</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">Premium Student</p>
-                        </div>
-                        <div class="w-9 h-9 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
-                            <i class="fas fa-user text-white text-sm"></i>
+                        <button onclick="toggleTheme()"
+                            class="p-2.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200">
+                            <i id="theme-icon" class="fas fa-moon"></i>
+                        </button>
+
+                        <button
+                            class="relative p-2.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200">
+                            <i class="fas fa-bell"></i>
+                            <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+                        </button>
+
+                        <div class="flex items-center space-x-3 pl-3 border-l border-gray-200 dark:border-gray-700">
+                            <div class="text-right">
+                                <p class="text-sm font-semibold dark:text-white">Samriddho</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Premium Student</p>
+                            </div>
+                            <div
+                                class="w-9 h-9 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                                <i class="fas fa-user text-white text-sm"></i>
+                            </div>
                         </div>
                     </div>
-                </div>
                 </div>
             </header>
 
@@ -268,14 +295,17 @@
             <main class="flex-1 overflow-y-auto p-6">
                 <!-- Ready to Help Section -->
                 <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 mb-8 text-center">
-                    <div class="w-20 h-20 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 pulse-dot">
+                    <div
+                        class="w-20 h-20 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 pulse-dot">
                         <i class="fas fa-comments text-white text-2xl"></i>
                     </div>
                     <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Ready to Help!</h2>
                     <p class="text-gray-600 dark:text-gray-400 text-lg mb-6">
-                        Ask me anything about your subjects. I can explain concepts, solve problems, and provide examples in multiple languages.
+                        Ask me anything about your subjects. I can explain concepts, solve problems, and provide
+                        examples in multiple languages.
                     </p>
-                    <button onclick="startChat()" class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                    <button onclick="startChat()"
+                        class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                         Start Conversation
                     </button>
                 </div>
@@ -287,7 +317,8 @@
                         <div class="bg-gradient-to-r from-purple-600 to-blue-600 p-4">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
-                                    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mr-3">
+                                    <div
+                                        class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mr-3">
                                         <i class="fas fa-robot text-white"></i>
                                     </div>
                                     <div>
@@ -296,7 +327,8 @@
                                     </div>
                                 </div>
                                 <div class="flex items-center space-x-2">
-                                    <select class="bg-white/20 text-white text-sm px-3 py-1 rounded-lg border-0 focus:ring-2 focus:ring-white/50">
+                                    <select
+                                        class="bg-white/20 text-white text-sm px-3 py-1 rounded-lg border-0 focus:ring-2 focus:ring-white/50">
                                         <option value="en">🇺🇸 English</option>
                                         <option value="es">🇪🇸 Español</option>
                                         <option value="fr">🇫🇷 Français</option>
@@ -309,14 +341,17 @@
                         </div>
 
                         <!-- Chat Messages -->
-                        <div id="chatMessages" class="chat-container p-6 space-y-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); background-size: 400% 400%; animation: gradientShift 15s ease infinite;">
+                        <div id="chatMessages" class="chat-container p-6 space-y-4"
+                            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); background-size: 400% 400%; animation: gradientShift 15s ease infinite;">
                             <!-- Initial bot message -->
                             <div class="flex items-start space-x-3 chat-bubble">
                                 <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm">
                                     <i class="fas fa-robot text-purple-600 text-sm"></i>
                                 </div>
-                                <div class="bg-white/90 backdrop-blur-sm rounded-2xl rounded-tl-sm p-4 shadow-sm max-w-xs">
-                                    <p class="text-gray-800 text-sm">Hello! I'm your AI study assistant. How can I help you today?</p>
+                                <div
+                                    class="bg-white/90 backdrop-blur-sm rounded-2xl rounded-tl-sm p-4 shadow-sm max-w-xs">
+                                    <p class="text-gray-800 text-sm">Hello! I'm your AI study assistant. How can I help
+                                        you today?</p>
                                     <p class="text-gray-500 text-xs mt-2">10:30 AM</p>
                                 </div>
                             </div>
@@ -326,20 +361,19 @@
                         <div class="p-4 border-t border-gray-200 dark:border-gray-700">
                             <div class="flex items-center space-x-3">
                                 <div class="relative flex-1">
-                                    <input
-                                        type="text"
-                                        id="chatInput"
-                                        placeholder="Ask your doubt here..."
-                                        class="w-full px-4 py-3 pr-12 bg-gray-100 dark:bg-gray-700 border-0 rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                                    >
-                                    <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-purple-600 transition-colors">
+                                    <input type="text" id="chatInput" placeholder="Ask your doubt here..."
+                                        class="w-full px-4 py-3 pr-12 bg-gray-100 dark:bg-gray-700 border-0 rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400">
+                                    <button
+                                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-purple-600 transition-colors">
                                         <i class="fas fa-plus"></i>
                                     </button>
                                 </div>
-                                <button class="p-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors shadow-lg">
+                                <button
+                                    class="p-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors shadow-lg">
                                     <i class="fas fa-microphone"></i>
                                 </button>
-                                <button onclick="sendMessage()" class="p-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-xl transition-all shadow-lg">
+                                <button id="send-btn" onclick="sendMessage()"
+                                    class="p-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-xl transition-all shadow-lg">
                                     <i class="fas fa-paper-plane"></i>
                                 </button>
                             </div>
@@ -353,22 +387,27 @@
                         <h3 class="text-xl font-bold text-gray-900 dark:text-white">Previous Conversations</h3>
                         <button class="text-purple-600 hover:text-purple-700 font-medium text-sm">View All</button>
                     </div>
-                    
+
                     <div class="space-y-4">
-                        <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover-lift cursor-pointer">
-                            <div class="w-10 h-10 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center mr-4">
+                        <div
+                            class="flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover-lift cursor-pointer">
+                            <div
+                                class="w-10 h-10 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center mr-4">
                                 <i class="fas fa-atom text-white text-sm"></i>
                             </div>
                             <div class="flex-1">
                                 <h4 class="font-semibold text-gray-900 dark:text-white">Physics - Quantum Mechanics</h4>
-                                <p class="text-gray-600 dark:text-gray-400 text-sm">Discussion about wave-particle duality</p>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm">Discussion about wave-particle
+                                    duality</p>
                                 <p class="text-gray-500 dark:text-gray-500 text-xs mt-1">2 hours ago</p>
                             </div>
                             <i class="fas fa-chevron-right text-gray-400"></i>
                         </div>
 
-                        <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover-lift cursor-pointer">
-                            <div class="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center mr-4">
+                        <div
+                            class="flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover-lift cursor-pointer">
+                            <div
+                                class="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center mr-4">
                                 <i class="fas fa-calculator text-white text-sm"></i>
                             </div>
                             <div class="flex-1">
@@ -379,25 +418,32 @@
                             <i class="fas fa-chevron-right text-gray-400"></i>
                         </div>
 
-                        <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover-lift cursor-pointer">
-                            <div class="w-10 h-10 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full flex items-center justify-center mr-4">
+                        <div
+                            class="flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover-lift cursor-pointer">
+                            <div
+                                class="w-10 h-10 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full flex items-center justify-center mr-4">
                                 <i class="fas fa-flask text-white text-sm"></i>
                             </div>
                             <div class="flex-1">
-                                <h4 class="font-semibold text-gray-900 dark:text-white">Chemistry - Organic Reactions</h4>
-                                <p class="text-gray-600 dark:text-gray-400 text-sm">Mechanism of SN1 and SN2 reactions</p>
+                                <h4 class="font-semibold text-gray-900 dark:text-white">Chemistry - Organic Reactions
+                                </h4>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm">Mechanism of SN1 and SN2 reactions
+                                </p>
                                 <p class="text-gray-500 dark:text-gray-500 text-xs mt-1">3 days ago</p>
                             </div>
                             <i class="fas fa-chevron-right text-gray-400"></i>
                         </div>
 
-                        <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover-lift cursor-pointer">
-                            <div class="w-10 h-10 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mr-4">
+                        <div
+                            class="flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover-lift cursor-pointer">
+                            <div
+                                class="w-10 h-10 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mr-4">
                                 <i class="fas fa-dna text-white text-sm"></i>
                             </div>
                             <div class="flex-1">
                                 <h4 class="font-semibold text-gray-900 dark:text-white">Biology - Genetics</h4>
-                                <p class="text-gray-600 dark:text-gray-400 text-sm">Mendel's laws and inheritance patterns</p>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm">Mendel's laws and inheritance
+                                    patterns</p>
                                 <p class="text-gray-500 dark:text-gray-500 text-xs mt-1">1 week ago</p>
                             </div>
                             <i class="fas fa-chevron-right text-gray-400"></i>
@@ -405,7 +451,7 @@
                     </div>
                 </div>
             </main>
-            
+
             <!-- Footer -->
             <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4 px-6">
                 <div class="text-center">
@@ -422,46 +468,46 @@
 
         // Theme toggle functionality
         function toggleTheme() {
-    isDarkMode = !isDarkMode;
-    const html = document.documentElement;
-    const themeIcon = document.getElementById('theme-icon');
+            isDarkMode = !isDarkMode;
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
 
-    if (themeIcon == null) {
-        alert('theme-icon not found!');
-        return;
-    }
+            if (themeIcon == null) {
+                alert('theme-icon not found!');
+                return;
+            }
 
-    if (isDarkMode) {
-        html.classList.add('dark');
-        themeIcon.className = 'fas fa-sun';
-        localStorage.setItem('theme', 'dark');
-    } else {
-        html.classList.remove('dark');
-        themeIcon.className = 'fas fa-moon';
-        localStorage.setItem('theme', 'light');
-    }
-}
+            if (isDarkMode) {
+                html.classList.add('dark');
+                themeIcon.className = 'fas fa-sun';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.classList.remove('dark');
+                themeIcon.className = 'fas fa-moon';
+                localStorage.setItem('theme', 'light');
+            }
+        }
 
-function initTheme() {
-    const savedTheme = localStorage.getItem('theme');
-    const html = document.documentElement;
-    const themeIcon = document.getElementById('theme-icon');
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
 
-    if (themeIcon == null) {
-        alert('theme-icon not found!');
-        return;
-    }
+            if (themeIcon == null) {
+                alert('theme-icon not found!');
+                return;
+            }
 
-    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        isDarkMode = true;
-        html.classList.add('dark');
-        themeIcon.className = 'fas fa-sun';
-    } else {
-        isDarkMode = false;
-        html.classList.remove('dark');
-        themeIcon.className = 'fas fa-moon';
-    }
-}
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                isDarkMode = true;
+                html.classList.add('dark');
+                themeIcon.className = 'fas fa-sun';
+            } else {
+                isDarkMode = false;
+                html.classList.remove('dark');
+                themeIcon.className = 'fas fa-moon';
+            }
+        }
 
         // Toggle Sidebar
         function toggleSidebar() {
@@ -471,7 +517,7 @@ function initTheme() {
             const logoMini = document.getElementById('logo-mini');
             const sidebarTexts = document.querySelectorAll('.sidebar-text');
             const upgradeSection = document.querySelector('.sidebar-upgrade');
-            
+
             if (sidebarCollapsed) {
                 sidebar.classList.remove('sidebar-collapsed');
                 sidebar.classList.add('sidebar-expanded');
@@ -502,64 +548,135 @@ function initTheme() {
         }
 
         // Send Message Function
-        function sendMessage() {
+        async function sendMessage() {
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
-            
-            if (message) {
-                const chatMessages = document.getElementById('chatMessages');
-                
-                // Add user message
-                const userMessage = document.createElement('div');
-                userMessage.className = 'flex items-start space-x-3 justify-end chat-bubble';
-                userMessage.innerHTML = `
-                    <div class="bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-2xl rounded-tr-sm p-4 shadow-sm max-w-xs">
-                        <p class="text-sm">${message}</p>
-                        <p class="text-purple-100 text-xs mt-2">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-                    </div>
-                    <div class="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center shadow-sm">
-                        <i class="fas fa-user text-white text-sm"></i>
-                    </div>
-                `;
-                chatMessages.appendChild(userMessage);
-                
-                // Clear input
-                input.value = '';
-                
-                // Scroll to bottom
+            if (!message) return;
+
+            const chatMessages = document.getElementById('chatMessages');
+            // Render the user's message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'flex items-start space-x-3 justify-end chat-bubble';
+            userMessage.innerHTML = `
+      <div class="bg-blue-600 text-white rounded-2xl rounded-tr-sm p-4 shadow-sm max-w-xs ml-auto">
+        <p class="text-sm">${message}</p>
+        <p class="text-xs mt-2 text-blue-100">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+      </div>
+      <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center shadow-sm ml-2">
+        <i class="fas fa-user text-white text-sm"></i>
+      </div>
+    `;
+            chatMessages.appendChild(userMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Clear the input
+            input.value = '';
+
+            try {
+                const resp = await fetch('/chat/api', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+                const data = await resp.json();
+                const botText = data.reply || data.error || 'Sorry, something went wrong.';
+
+                // Render the bot’s reply
+                const botMessage = document.createElement('div');
+                botMessage.className = 'flex items-start space-x-3 chat-bubble';
+                botMessage.innerHTML = `
+      <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm">
+        <i class="fas fa-robot text-purple-600 text-sm"></i>
+      </div>
+      <div class="bg-white/90 backdrop-blur-sm rounded-2xl rounded-tl-sm p-4 shadow-sm max-w-xs">
+        <p class="text-gray-800 text-sm">${botText}</p>
+        <p class="text-gray-500 text-xs mt-2">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+      </div>
+    `;
+                chatMessages.appendChild(botMessage);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
-                
-                // Simulate bot response after delay
-                setTimeout(() => {
-                    const botMessage = document.createElement('div');
-                    botMessage.className = 'flex items-start space-x-3 chat-bubble';
-                    botMessage.innerHTML = `
-                        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm">
-                            <i class="fas fa-robot text-purple-600 text-sm"></i>
-                        </div>
-                        <div class="bg-white/90 backdrop-blur-sm rounded-2xl rounded-tl-sm p-4 shadow-sm max-w-xs">
-                            <p class="text-gray-800 text-sm">I understand your question about "${message}". Let me help you with that...</p>
-                            <p class="text-gray-500 text-xs mt-2">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-                        </div>
-                    `;
-                    chatMessages.appendChild(botMessage);
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }, 1000);
+
+            } catch (err) {
+                console.error('Chat API error', err);
+                // Optionally render an error message here…
             }
         }
 
-        // Enter key to send message
-        document.getElementById('chatInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
+        async function loadChatHistory() {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = ''; // Clear previous content
+
+            try {
+                const resp = await fetch('/chat/history');
+                const data = await resp.json();
+                if (!data.history || data.history.length === 0) {
+                    // No history, show welcome message
+                    chatMessages.innerHTML = `
+                <div class="flex items-start space-x-3 chat-bubble">
+                    <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm">
+                        <i class="fas fa-robot text-purple-600 text-sm"></i>
+                    </div>
+                    <div class="bg-white/90 backdrop-blur-sm rounded-2xl rounded-tl-sm p-4 shadow-sm max-w-xs">
+                        <p class="text-gray-800 text-sm">Hello! I'm your AI study assistant. How can I help you today?</p>
+                        <p class="text-gray-500 text-xs mt-2">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                    </div>
+                </div>
+            `;
+                } else {
+                    // Render chat history
+                    for (const msg of data.history) {
+                        if (msg.role === 'user') {
+                            chatMessages.innerHTML += `
+                        <div class="flex items-start space-x-3 justify-end chat-bubble">
+                            <div class="bg-blue-600 text-white rounded-2xl rounded-tr-sm p-4 shadow-sm max-w-xs ml-auto">
+                                <p class="text-sm">${msg.text}</p>
+                                <p class="text-xs mt-2 text-blue-100"></p>
+                            </div>
+                            <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center shadow-sm ml-2">
+                                <i class="fas fa-user text-white text-sm"></i>
+                            </div>
+                        </div>
+                    `;
+                        } else if (msg.role === 'bot') {
+                            chatMessages.innerHTML += `
+                        <div class="flex items-start space-x-3 chat-bubble">
+                            <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm">
+                                <i class="fas fa-robot text-purple-600 text-sm"></i>
+                            </div>
+                            <div class="bg-white/90 backdrop-blur-sm rounded-2xl rounded-tl-sm p-4 shadow-sm max-w-xs">
+                                <p class="text-gray-800 text-sm">${msg.text}</p>
+                                <p class="text-gray-500 text-xs mt-2"></p>
+                            </div>
+                        </div>
+                    `;
+                        }
+                    }
+                }
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            } catch (err) {
+                console.error('Failed to load chat history', err);
             }
-        });
+        }
 
         // Initialize everything when DOM loads
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', () => {
             initTheme();
+            startChat();
+            loadChatHistory();
 
+            // Send on click
+            document.getElementById('send-btn')?.addEventListener('click', sendMessage);
+
+            // Send on Enter
+            document.getElementById('chatInput')
+                .addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();  // prevent form submit / newline
+                        sendMessage();
+                    }
+                });
         });
     </script>
 </body>
+
 </html>
